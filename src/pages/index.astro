@@ -1,11 +1,191 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// src/pages/index.astro
+import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Trang chủ">
+    <main class="min-h-screen bg-white dark:bg-gray-900">
+        <!-- Heading Section -->
+        <section
+            class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 py-20"
+        >
+            <div class="container mx-auto px-4 text-center">
+                <h1
+                    class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6"
+                >
+                    Web Development Hub
+                </h1>
+                <p
+                    class="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8"
+                >
+                    Khám phá thế giới phát triển web với các công nghệ hiện đại.
+                    Từ cơ bản đến nâng cao, tất cả đều có ở đây.
+                </p>
+                <button
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+                >
+                    Bắt đầu học ngay
+                </button>
+            </div>
+        </section>
+
+        <!-- 4 Cards Section -->
+        <section class="py-4 bg-white dark:bg-gray-900">
+            <div class="container-fluid mx-auto">
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Web Overview Card -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div
+                            class="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4"
+                        >
+                            <svg
+                                class="w-6 h-6 text-blue-600 dark:text-blue-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"
+                                ></path>
+                            </svg>
+                        </div>
+                        <h3
+                            class="text-xl font-bold text-gray-900 dark:text-white mb-3"
+                        >
+                            Web Overview
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            Tổng quan về công nghệ web, kiến trúc và các khái
+                            niệm cơ bản trong phát triển web hiện đại.
+                        </p>
+                        <a
+                            href="/web-overview"
+                            class="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+                        >
+                            Tìm hiểu thêm →
+                        </a>
+                    </div>
+
+                    <!-- HTML Card -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div
+                            class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4"
+                        >
+                            <svg
+                                class="w-6 h-6 text-orange-600 dark:text-orange-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                                ></path>
+                            </svg>
+                        </div>
+                        <h3
+                            class="text-xl font-bold text-gray-900 dark:text-white mb-3"
+                        >
+                            HTML
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            Học HTML từ cơ bản đến nâng cao. Cấu trúc trang web,
+                            semantic markup và accessibility.
+                        </p>
+                        <a
+                            href="/html"
+                            class="text-orange-600 dark:text-orange-400 font-medium hover:underline"
+                        >
+                            Tìm hiểu thêm →
+                        </a>
+                    </div>
+
+                    <!-- CSS Card -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div
+                            class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4"
+                        >
+                            <svg
+                                class="w-6 h-6 text-green-600 dark:text-green-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v6a4 4 0 004 4h4a2 2 0 002-2V5z"
+                                ></path>
+                            </svg>
+                        </div>
+                        <h3
+                            class="text-xl font-bold text-gray-900 dark:text-white mb-3"
+                        >
+                            CSS
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            Styling và layout với CSS. Flexbox, Grid, responsive
+                            design và các kỹ thuật hiện đại.
+                        </p>
+                        <a
+                            href="/css"
+                            class="text-green-600 dark:text-green-400 font-medium hover:underline"
+                        >
+                            Tìm hiểu thêm →
+                        </a>
+                    </div>
+
+                    <!-- JavaScript Card -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700"
+                    >
+                        <div
+                            class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex items-center justify-center mb-4"
+                        >
+                            <svg
+                                class="w-6 h-6 text-yellow-600 dark:text-yellow-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3
+                            class="text-xl font-bold text-gray-900 dark:text-white mb-3"
+                        >
+                            JavaScript
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4">
+                            Lập trình JavaScript từ cơ bản đến nâng cao. ES6+,
+                            DOM manipulation và modern frameworks.
+                        </p>
+                        <a
+                            href="/javascript"
+                            class="text-yellow-600 dark:text-yellow-400 font-medium hover:underline"
+                        >
+                            Tìm hiểu thêm →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 </Layout>
+

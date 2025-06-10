@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+
+import { links } from "./define-topic.js";
+---
+
+<Layout>
+    <ReadLayout title="Tài liệu học Astro" links={links}>
+        <h1 class="text-3xl font-bold">Nội dung chính</h1>
+        <ul class="list-disc pl-6">
+            <li>Pseudo-classes: Tạo kiểu cho các trạng thái đặc biệt của phần tử (ví dụ: <code>:hover</code>, <code>:focus</code>).</li>
+            <li>Pseudo-elements: Tạo kiểu cho một phần cụ thể của phần tử (ví dụ: <code>::before</code>, <code>::first-letter</code>).</li>
+            <li>Focus: Trạng thái khi một phần tử được chọn.</li>
+        </ul>
+        
+    </ReadLayout>
+</Layout>

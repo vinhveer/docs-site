@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+
+import { links } from "./define-topic.js";
+---
+<Layout>
+    <ReadLayout title="Tài liệu học Astro" links={links}>
+        <h1 class="text-3xl font-bold">Nội dung chính</h1>
+        
+        <ul class="list-disc pl-6">
+            <li>Images: Hiển thị hình ảnh (<code>&lt;img&gt;</code>).</li>
+            <li>Audio and Video: Phát âm thanh và video (<code>&lt;audio&gt;</code>, <code>&lt;video&gt;</code>).</li>
+            <li>Tables: Hiển thị dữ liệu dạng bảng, có hàng và cột (<code>&lt;table&gt;</code>).</li>
+        </ul>
+        
+    </ReadLayout>
+</Layout>

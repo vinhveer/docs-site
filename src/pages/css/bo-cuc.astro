@@ -1,0 +1,21 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+
+import { links } from "./define-topic.js";
+---
+
+<Layout>
+    <ReadLayout title="Tài liệu học Astro" links={links}>
+        <h1 class="text-3xl font-bold">Nội dung chính</h1>
+        <ul>
+            <li>Layout: Các khái niệm bố cục chung.</li>
+            <li>Flexbox: Bố cục một chiều linh hoạt.</li>
+            <li>Grid: Bố cục hai chiều dạng lưới.</li>
+            <li>Logical Properties: Các thuộc tính logic cho bố cục đa hướng.</li>
+            <li>Spacing: Kiểm soát khoảng cách giữa các phần tử.</li>
+            <li>Z-index and stacking contexts: Quản lý thứ tự xếp chồng của các phần tử.</li>
+            <li>Overflow: Xử lý nội dung tràn ra ngoài hộp chứa.</li>
+        </ul>
+    </ReadLayout>
+</Layout>

@@ -1,0 +1,13 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+
+import { links } from "./define-topic.js";
+---
+
+<Layout>
+    <ReadLayout title="Tài liệu học Astro" links={links}>
+        <h1 class="text-2xl font-bold">Nội dung chính</h1>
+        <p>Đây là phần nội dung của trang.</p>
+    </ReadLayout>
+</Layout>

@@ -1,0 +1,33 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+
+import { links } from "./define-topic.js";
+---
+<Layout>
+    <ReadLayout title="Tài liệu học Astro" links={links}>
+        <h1 class="text-3xl font-bold">Nội dung chính</h1>
+
+        <ul class="list-disc pl-6">
+            <li>
+            Links: Hành vi điều hướng đến trang khác hoặc một phần khác của trang (<code>&lt;a&gt;</code>).
+            </li>
+            <li>
+            Navigation: Xây dựng các menu điều hướng (thường kết hợp <code>&lt;nav&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;a&gt;</code>).
+            </li>
+            <li>
+            Forms: Tạo các vùng để người dùng nhập dữ liệu (<code>&lt;form&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;button&gt;</code>).
+            </li>
+            <li>
+            Focus: Quản lý trạng thái được chọn của một phần tử, cho phép tương tác qua bàn phím.
+            </li>
+            <li>
+            Dialog: Tạo ra một hộp thoại bật lên yêu cầu sự chú ý của người dùng (<code>&lt;dialog&gt;</code>).
+            </li>
+            <li>
+            Details and summary: Hành vi cho phép người dùng chủ động mở hoặc đóng để xem thêm thông tin (<code>&lt;details&gt;</code>, <code>&lt;summary&gt;</code>).
+            </li>
+        </ul>
+
+    </ReadLayout>
+</Layout>

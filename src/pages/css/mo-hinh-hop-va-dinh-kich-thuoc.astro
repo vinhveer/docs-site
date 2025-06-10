@@ -1,0 +1,17 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+
+import { links } from "./define-topic.js";
+---
+
+<Layout>
+    <ReadLayout title="Tài liệu học Astro" links={links}>
+        <h1 class="text-3xl font-bold">Nội dung chính</h1>
+        <ul>
+            <li>Box Model: Mô hình hộp (content, padding, border, margin).</li>
+            <li>Sizing Units: Các đơn vị đo lường (ví dụ: px, %, em, rem, vw).</li>
+        </ul>
+
+    </ReadLayout>
+</Layout>

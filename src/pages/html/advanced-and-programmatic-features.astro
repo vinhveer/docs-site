@@ -1,0 +1,17 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+
+import { links } from "./define-topic.js";
+---
+<Layout>
+    <ReadLayout title="Tài liệu học Astro" links={links}>
+        <h1 class="text-3xl font-bold">Nội dung chính</h1>
+
+        <ul class="list-disc pl-6">
+            <li>Attributes: Mở rộng hành vi và cung cấp thêm thông tin cho các thẻ.</li>
+            <li>Template, slot, and shadow: Nền tảng cho việc tạo các thành phần web (Web Components) có thể tái sử dụng, đóng gói hành vi và cấu trúc.</li>
+            <li>HTML APIs: Giao diện lập trình cho phép JavaScript tương tác và điều khiển các hành vi của trình duyệt (ví dụ: Geolocation API, Web Storage API).</li>
+        </ul>
+    </ReadLayout>
+</Layout>

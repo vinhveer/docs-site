@@ -1,0 +1,22 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+
+import { links } from "./define-topic.js";
+---
+
+<Layout>
+    <ReadLayout title="Tài liệu học Astro" links={links}>
+        <h1 class="text-3xl font-bold">Nội dung chính</h1>
+        <ul>
+            <li>Welcome to Learn CSS!: Giới thiệu chung.</li>
+            <li>Selectors: Cách nhắm mục tiêu các phần tử HTML.</li>
+            <li>The cascade: Thứ tự ưu tiên của các quy tắc CSS.</li>
+            <li>Specificity: Cách trình duyệt quyết định quy tắc nào phù hợp nhất.</li>
+            <li>Inheritance: Cách các thuộc tính được truyền từ phần tử mẹ sang phần tử con.</li>
+            <li>Functions: Các hàm có sẵn trong CSS (ví dụ: calc(), rgb()).</li>
+            <li>Conclusion and next steps: Tổng kết và định hướng học tập tiếp theo.</li>
+        </ul>
+        
+    </ReadLayout>
+</Layout>
