@@ -1,17 +1,747 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+import CodePlayground from "../../components/CodePlayground.astro";
+
+const markdownContent = `# Nội dung chính
+
+- Box Model: Mô hình hộp (content, padding, border, margin).
+- Sizing Units: Các đơn vị đo lường (ví dụ: px, %, em, rem, vw).
+
+### **Phần 1: Mô hình Hộp (The Box Model)**
+(Tóm tắt từ The CSS Podcast - 001: The Box Model)
+
+Mô hình hộp là một trong những khái niệm nền tảng cốt lõi nhất của CSS. Hiểu rõ nó sẽ giúp bạn viết CSS dễ dự đoán hơn. **Mọi thứ được hiển thị bởi CSS đều là một cái hộp**, kể cả khi nó là văn bản hay một hình tròn được tạo bởi \`border-radius\`.
+
+#### **Kích thước Nội tại và Ngoại lai (Intrinsic and Extrinsic Sizing)**
+
+* **Kích thước Ngoại lai (Extrinsic Sizing)**: Bạn (lập trình viên) tự đặt ra kích thước cố định cho hộp, ví dụ: \`width: 400px;\`. Điều này cho phép bạn kiểm soát chặt chẽ layout, nhưng nếu nội dung bên trong quá lớn, nó sẽ bị **tràn (overflow)** ra ngoài hộp.
+* **Kích thước Nội tại (Intrinsic Sizing)**: Bạn để trình duyệt tự quyết định kích thước của hộp dựa trên nội dung bên trong nó. Đây là hành vi mặc định và linh hoạt hơn nhiều. Ví dụ, bằng cách không đặt \`width\` hoặc dùng \`width: min-content\`, hộp sẽ tự co giãn để vừa với nội dung.
+
+#### **Các khu vực của Mô hình Hộp**
+
+Một hộp trong CSS được cấu tạo từ 4 khu vực đồng tâm:
+
+1.  **Hộp nội dung (Content Box)**: Khu vực chứa nội dung thực tế (văn bản, hình ảnh, hoặc các hộp con khác).
+2.  **Hộp đệm (Padding Box)**: Khoảng không gian trống bao quanh hộp nội dung, được tạo ra bởi thuộc tính \`padding\`. Nền của hộp sẽ hiển thị trong khu vực này.
+3.  **Hộp viền (Border Box)**: Lớp viền bao quanh hộp đệm, được tạo ra bởi thuộc tính \`border\`. Đây là giới hạn trực quan của phần tử.
+4.  **Hộp lề (Margin Box)**: Khoảng không gian trong suốt bên ngoài hộp viền, được tạo bởi thuộc tính \`margin\`. Nó tạo ra khoảng cách giữa phần tử này với các phần tử khác.
+
+*Ví dụ tương tự như một bức tranh treo tường:*
+* **Nội dung**: Tác phẩm nghệ thuật.
+* **Padding**: Tấm lót màu trắng giữa khung tranh và tác phẩm.
+* **Border**: Khung tranh.
+* **Margin**: Khoảng cách giữa các khung tranh trên tường.
+
+#### **Kiểm soát Mô hình Hộp với \`box-sizing\`**
+
+Đây là phần quan trọng nhất. Theo mặc định, trình duyệt sử dụng \`box-sizing: content-box;\`.
+
+* **\`box-sizing: content-box\` (Mặc định)**: Khi bạn đặt \`width\` và \`height\`, các kích thước này chỉ áp dụng cho **Hộp nội dung**. \`padding\` và \`border\` sẽ được **cộng thêm vào bên ngoài**, làm cho kích thước thực tế của hộp lớn hơn bạn mong đợi.
+    * Ví dụ:
+        \`\`\`css
+        .my-box {
+          width: 200px;
+          border: 10px solid;
+          padding: 20px;
+          /* box-sizing: content-box; (mặc định) */
+        }
+        \`\`\`
+    * Chiều rộng thực tế trên màn hình sẽ là: \`200px (content) + 40px (padding hai bên) + 20px (border hai bên) = 260px\`.
+
+* **\`box-sizing: border-box\` (Mô hình thay thế)**: Khi bạn đặt \`width\` và \`height\`, các kích thước này sẽ áp dụng cho toàn bộ khu vực **tính đến hết lớp viền**. \`padding\` và \`border\` sẽ bị "đẩy" vào bên trong.
+    * Với cùng ví dụ trên nhưng đổi \`box-sizing\`:
+        \`\`\`css
+        .my-box {
+          box-sizing: border-box;
+          width: 200px;
+          border: 10px solid;
+          padding: 20px;
+        }
+        \`\`\`
+    * Chiều rộng thực tế trên màn hình sẽ **đúng bằng 200px**.
+
+**Lưu ý quan trọng (Thực hành tốt nhất):**
+Mô hình \`border-box\` dễ dự đoán hơn rất nhiều. Hầu hết các lập trình viên đều áp dụng quy tắc sau vào đầu file CSS của họ để mọi phần tử đều sử dụng mô hình này:
+
+\`\`\`css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+\`\`\`
+`;
+
+const markdownContent2 = `
+---
+
+### **Phần 2: Các đơn vị Kích thước (Sizing Units)**
+(Tóm tắt từ The CSS Podcast - 008: Sizing Units)
+
+#### **Số (Numbers)**
+
+Số là các giá trị không có đơn vị (ví dụ: \`1.5\`, \`50\`). Ý nghĩa của chúng phụ thuộc vào ngữ cảnh.
+* **Lưu ý quan trọng với \`line-height\`**: Nên dùng giá trị số không đơn vị. Ví dụ: \`line-height: 1.5;\`. Giá trị này có nghĩa là chiều cao dòng sẽ bằng \`150%\` của \`font-size\` hiện tại. Điều này giúp \`line-height\` luôn tương thích với cỡ chữ khi nó được kế thừa, thay vì bị cố định như \`line-height: 24px;\`.
+
+#### **Phần trăm (Percentages)**
+
+Phần trăm luôn được tính toán dựa trên một giá trị gốc.
+* \`width: 50%;\` sẽ bằng 50% chiều rộng của phần tử cha.
+* **Lưu ý quan trọng với \`padding\` và \`margin\`**: Khi dùng đơn vị \`%\` cho \`padding\` và \`margin\` (kể cả \`padding-top/bottom\` và \`margin-top/bottom\`), chúng luôn được tính toán dựa trên **chiều rộng (width)** của phần tử cha.
+* \`transform: translateX(10%);\` sẽ được tính dựa trên 10% chiều rộng của **chính phần tử đó**.
+
+#### **Độ dài tuyệt đối (Absolute Lengths)**
+
+Các đơn vị này có kích thước cố định, không thay đổi theo ngữ cảnh. Chúng hữu ích khi thiết kế cho in ấn.
+* \`px\`: Pixels (điểm ảnh). Đơn vị tuyệt đối phổ biến nhất cho màn hình.
+* Các đơn vị khác: \`cm\`, \`mm\`, \`in\` (inches), \`pt\` (points), \`pc\` (picas).
+
+#### **Độ dài tương đối (Relative Lengths)**
+
+Các đơn vị này được tính toán dựa trên một giá trị gốc khác, rất hữu ích cho thiết kế đáp ứng (responsive design).
+
+**1. Đơn vị tương đối với Cỡ chữ (Font-size-relative units)**
+
+* \`em\`: Tương đối với \`font-size\` của **phần tử cha**. \`1.5em\` nghĩa là lớn hơn 150%.
+* \`rem\` (root em): Tương đối với \`font-size\` của **phần tử gốc** (\`<html>\`). Đây là đơn vị rất phổ biến để tạo ra các hệ thống kích thước nhất quán và dễ quản lý.
+* \`ch\`: Bằng chiều rộng của ký tự "0" trong font chữ hiện tại. Rất hữu ích để giới hạn độ dài của một dòng văn bản để dễ đọc. Ví dụ: \`p { max-width: 60ch; }\`.
+* \`lh\`: Tương đối với \`line-height\` của phần tử.
+
+**Lưu ý quan trọng về khả năng tiếp cận (Accessibility):**
+Sử dụng các đơn vị tương đối như \`rem\` và \`em\` cho \`font-size\` sẽ tôn trọng cài đặt cỡ chữ của người dùng trên trình duyệt hoặc hệ điều hành, trong khi \`px\` sẽ ghi đè chúng.
+
+**2. Đơn vị tương đối với Viewport (Viewport-relative units)**
+Viewport là khu vực cửa sổ trình duyệt mà người dùng nhìn thấy.
+
+* \`vw\` (viewport width): \`1vw\` = 1% chiều rộng của viewport.
+* \`vh\` (viewport height): \`1vh\` = 1% chiều cao của viewport.
+* \`vmin\`: 1% của chiều nhỏ hơn trong viewport (rộng hoặc cao).
+* \`vmax\`: 1% của chiều lớn hơn trong viewport.
+
+#### **Các đơn vị khác**
+* **Góc (Angle)**: \`deg\` (độ), \`rad\` (radians), \`turn\` (vòng). Dùng trong \`transform: rotate(90deg);\` hoặc các hàm màu như \`hsl()\`.
+* **Độ phân giải (Resolution)**: \`dpi\` (dots per inch). Dùng trong media query để nhận diện màn hình có độ phân giải cao (ví dụ: Retina) và cung cấp hình ảnh chất lượng hơn.
+`
+
+const html = `
+<div class="container">
+        <h1>CSS Box Model Simulator</h1>
+        
+        <div class="main-content">
+            <!-- Box Model Visualization -->
+            <div class="box-model-container">
+                <div class="margin-box">
+                    <div class="border-box">
+                        <div class="padding-box">
+                            <div class="content-box">
+                                <span>Content</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Labels -->
+                <div class="labels">
+                    <div class="label margin-label">margin</div>
+                    <div class="label border-label">border</div>
+                    <div class="label padding-label">padding</div>
+                    <div class="label content-label">content</div>
+                </div>
+            </div>
+            
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <h3>Điều chỉnh thuộc tính</h3>
+                
+                <!-- Margin Controls -->
+                <div class="control-group">
+                    <h4>Margin</h4>
+                    <div class="control-row">
+                        <label for="margin-top">Top:</label>
+                        <input type="range" id="margin-top" min="0" max="50" value="20">
+                        <span class="value" id="margin-top-value">20px</span>
+                    </div>
+                    <div class="control-row">
+                        <label for="margin-right">Right:</label>
+                        <input type="range" id="margin-right" min="0" max="50" value="20">
+                        <span class="value" id="margin-right-value">20px</span>
+                    </div>
+                    <div class="control-row">
+                        <label for="margin-bottom">Bottom:</label>
+                        <input type="range" id="margin-bottom" min="0" max="50" value="20">
+                        <span class="value" id="margin-bottom-value">20px</span>
+                    </div>
+                    <div class="control-row">
+                        <label for="margin-left">Left:</label>
+                        <input type="range" id="margin-left" min="0" max="50" value="20">
+                        <span class="value" id="margin-left-value">20px</span>
+                    </div>
+                </div>
+                
+                <!-- Border Controls -->
+                <div class="control-group">
+                    <h4>Border</h4>
+                    <div class="control-row">
+                        <label for="border-width">Width:</label>
+                        <input type="range" id="border-width" min="0" max="20" value="3">
+                        <span class="value" id="border-width-value">3px</span>
+                    </div>
+                </div>
+                
+                <!-- Padding Controls -->
+                <div class="control-group">
+                    <h4>Padding</h4>
+                    <div class="control-row">
+                        <label for="padding-top">Top:</label>
+                        <input type="range" id="padding-top" min="0" max="50" value="15">
+                        <span class="value" id="padding-top-value">15px</span>
+                    </div>
+                    <div class="control-row">
+                        <label for="padding-right">Right:</label>
+                        <input type="range" id="padding-right" min="0" max="50" value="15">
+                        <span class="value" id="padding-right-value">15px</span>
+                    </div>
+                    <div class="control-row">
+                        <label for="padding-bottom">Bottom:</label>
+                        <input type="range" id="padding-bottom" min="0" max="50" value="15">
+                        <span class="value" id="padding-bottom-value">15px</span>
+                    </div>
+                    <div class="control-row">
+                        <label for="padding-left">Left:</label>
+                        <input type="range" id="padding-left" min="0" max="50" value="15">
+                        <span class="value" id="padding-left-value">15px</span>
+                    </div>
+                </div>
+                
+                <!-- Content Controls -->
+                <div class="control-group">
+                    <h4>Content</h4>
+                    <div class="control-row">
+                        <label for="content-width">Width:</label>
+                        <input type="range" id="content-width" min="100" max="300" value="150">
+                        <span class="value" id="content-width-value">150px</span>
+                    </div>
+                    <div class="control-row">
+                        <label for="content-height">Height:</label>
+                        <input type="range" id="content-height" min="50" max="200" value="100">
+                        <span class="value" id="content-height-value">100px</span>
+                    </div>
+                </div>
+                
+                <!-- CSS Output -->
+                <div class="css-output">
+                    <h4>CSS Generated:</h4>
+                    <pre id="css-code"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+
+const css = `
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+    font-weight: 300;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 40px;
+    align-items: start;
+}
+
+/* Box Model Visualization */
+.box-model-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 50px;
+}
+
+.margin-box {
+    background: rgba(255, 193, 7, 0.3);
+    border: 2px dashed #ffc107;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.border-box {
+    background: rgba(220, 53, 69, 0.3);
+    border: 3px solid #dc3545;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.padding-box {
+    background: rgba(40, 167, 69, 0.3);
+    border: 2px dashed #28a745;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.content-box {
+    background: rgba(0, 123, 255, 0.8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    width: 150px;
+    height: 100px;
+}
+
+/* Labels */
+.labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.label {
+    position: absolute;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.margin-label {
+    background: #ffc107;
+    top: 10px;
+    left: 10px;
+}
+
+.border-label {
+    background: #dc3545;
+    top: 35px;
+    left: 35px;
+}
+
+.padding-label {
+    background: #28a745;
+    top: 60px;
+    left: 60px;
+}
+
+.content-label {
+    background: #007bff;
+    top: 85px;
+    left: 85px;
+}
+
+/* Controls Panel */
+.controls-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.controls-panel h3 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.control-group {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.control-group:last-of-type {
+    border-bottom: none;
+}
+
+.control-group h4 {
+    margin-bottom: 15px;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.control-row {
+    display: grid;
+    grid-template-columns: 60px 1fr 60px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.control-row label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+}
+
+.control-row input[type="range"] {
+    appearance: none;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    outline: none;
+}
+
+.control-row input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #007bff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.control-row input[type="range"]::-webkit-slider-thumb:hover {
+    background: #0056b3;
+}
+
+.control-row input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #007bff;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+.value {
+    font-size: 12px;
+    color: #666;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* CSS Output */
+.css-output {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #e9ecef;
+}
+
+.css-output h4 {
+    margin-bottom: 10px;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.css-output pre {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 15px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #495057;
+    overflow-x: auto;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .box-model-container {
+        padding: 30px;
+        min-height: 300px;
+    }
+    
+    .controls-panel {
+        order: -1;
+    }
+    
+    .control-row {
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+}
+
+/* Hover Effects */
+.margin-box:hover {
+    border-color: #ffcd39;
+}
+
+.border-box:hover {
+    border-color: #e55353;
+}
+
+.padding-box:hover {
+    border-color: #34ce57;
+}
+
+.content-box:hover {
+    background: rgba(0, 123, 255, 0.9);
+    transform: scale(1.02);
+}
+`
+const js = String.raw`
+// Simplified version for iframe sandbox environment
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const marginBox = document.querySelector('.margin-box');
+    const borderBox = document.querySelector('.border-box');
+    const paddingBox = document.querySelector('.padding-box');
+    const contentBox = document.querySelector('.content-box');
+    const cssOutput = document.getElementById('css-code');
+
+    // Values
+    const values = {
+        marginTop: 20,
+        marginRight: 20,
+        marginBottom: 20,
+        marginLeft: 20,
+        borderWidth: 3,
+        paddingTop: 15,
+        paddingRight: 15,
+        paddingBottom: 15,
+        paddingLeft: 15,
+        contentWidth: 150,
+        contentHeight: 100
+    };
+
+    // Update box model
+    function updateBoxModel() {
+        if (marginBox) {
+            marginBox.style.padding = 
+                \`\${values.marginTop}px \${values.marginRight}px \${values.marginBottom}px \${values.marginLeft}px\`;
+        }
+
+        if (borderBox) {
+            borderBox.style.borderWidth = \`\${values.borderWidth}px\`;
+        }
+
+        if (paddingBox) {
+            paddingBox.style.padding = 
+                \`\${values.paddingTop}px \${values.paddingRight}px \${values.paddingBottom}px \${values.paddingLeft}px\`;
+        }
+
+        if (contentBox) {
+            contentBox.style.width = \`\${values.contentWidth}px\`;
+            contentBox.style.height = \`\${values.contentHeight}px\`;
+        }
+    }
+
+    // Update CSS output
+    function updateCSSOutput() {
+        if (!cssOutput) return;
+        
+        const css = \`.element {
+  /* Content */
+  width: \${values.contentWidth}px;
+  height: \${values.contentHeight}px;
+
+  /* Padding */
+  padding: \${values.paddingTop}px \${values.paddingRight}px \${values.paddingBottom}px \${values.paddingLeft}px;
+
+  /* Border */
+  border: \${values.borderWidth}px solid #dc3545;
+
+  /* Margin */
+  margin: \${values.marginTop}px \${values.marginRight}px \${values.marginBottom}px \${values.marginLeft}px;
+
+  /* Box Model */
+  box-sizing: border-box;
+}\`;
+
+        cssOutput.textContent = css;
+    }
+
+    // Add slider listener
+    function addSliderListener(sliderId, valueKey) {
+        const slider = document.getElementById(sliderId) as HTMLInputElement;
+        const valueDisplay = document.getElementById(\`\${sliderId}-value\`);
+
+        if (slider && valueDisplay) {
+            slider.addEventListener('input', function(e) {
+                const value = parseInt((e.target as HTMLInputElement).value);
+                (values as any)[valueKey] = value;
+                valueDisplay.textContent = \`\${value}px\`;
+                updateBoxModel();
+                updateCSSOutput();
+            });
+        }
+    }
+
+    // Setup all listeners
+    function setupEventListeners() {
+        addSliderListener('margin-top', 'marginTop');
+        addSliderListener('margin-right', 'marginRight');
+        addSliderListener('margin-bottom', 'marginBottom');
+        addSliderListener('margin-left', 'marginLeft');
+        addSliderListener('border-width', 'borderWidth');
+        addSliderListener('padding-top', 'paddingTop');
+        addSliderListener('padding-right', 'paddingRight');
+        addSliderListener('padding-bottom', 'paddingBottom');
+        addSliderListener('padding-left', 'paddingLeft');
+        addSliderListener('content-width', 'contentWidth');
+        addSliderListener('content-height', 'contentHeight');
+    }
+
+    // Add hover effects
+    function addHoverEffects() {
+        const boxes = document.querySelectorAll('.margin-box, .border-box, .padding-box, .content-box');
+
+        boxes.forEach(function(box) {
+            box.addEventListener('mouseenter', function() {
+                (this as HTMLElement).style.transform = 'scale(1.02)';
+            });
+
+            box.addEventListener('mouseleave', function() {
+                (this as HTMLElement).style.transform = 'scale(1)';
+            });
+        });
+    }
+
+    // Add label animation
+    function addLabelAnimation() {
+        const labels = document.querySelectorAll('.label');
+
+        labels.forEach(function(label, index) {
+            setTimeout(function() {
+                (label as HTMLElement).style.opacity = '0';
+                (label as HTMLElement).style.transform = 'translateY(-10px)';
+
+                setTimeout(function() {
+                    (label as HTMLElement).style.transition = 'all 0.3s ease';
+                    (label as HTMLElement).style.opacity = '1';
+                    (label as HTMLElement).style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
+    }
+
+    // Copy to clipboard functionality
+    function addCopyFeature() {
+        if (cssOutput) {
+            cssOutput.addEventListener('click', function() {
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(cssOutput.textContent || '').then(function() {
+                            showCopyFeedback();
+                        });
+                    } else {
+                        const textArea = document.createElement('textarea');
+                        textArea.value = cssOutput.textContent || '';
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        showCopyFeedback();
+                    }
+                } catch (err) {
+                    console.log('Copy failed, but CSS is displayed');
+                }
+            });
+        }
+    }
+
+    function showCopyFeedback() {
+        if (cssOutput) {
+            cssOutput.style.background = '#d4edda';
+            setTimeout(function() {
+                cssOutput.style.background = '#f8f9fa';
+            }, 500);
+        }
+    }
+
+    // Initialize everything
+    function init() {
+        setupEventListeners();
+        updateBoxModel();
+        updateCSSOutput();
+        addHoverEffects();
+        addLabelAnimation();
+        addCopyFeature();
+        
+        console.log('🎨 CSS Box Model Simulator loaded successfully!');
+        console.log('💡 Click on the CSS code to copy it to clipboard');
+    }
+
+    // Start the app
+    init();
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case 'r':
+                    e.preventDefault();
+                    location.reload();
+                    break;
+                case 'c':
+                    if ((e.target as HTMLElement).id === 'css-code') {
+                        e.preventDefault();
+                        try {
+                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                navigator.clipboard.writeText((e.target as HTMLElement).textContent || '');
+                            }
+                        } catch (err) {
+                            console.log('Copy shortcut failed');
+                        }
+                    }
+                    break;
+            }
+        }
+    });
+});
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        <ul>
-            <li>Box Model: Mô hình hộp (content, padding, border, margin).</li>
-            <li>Sizing Units: Các đơn vị đo lường (ví dụ: px, %, em, rem, vw).</li>
-        </ul>
+  <ReadLayout title="Tài liệu học Astro" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
 
-    </ReadLayout>
+    <CodePlayground html={html} css={css} js={js} height="600px" />
+    
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent2} />
+    </main>
+  </ReadLayout>
 </Layout>

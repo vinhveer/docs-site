@@ -1,18 +1,121 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Nội dung chính
+
+- Pseudo-classes: Tạo kiểu cho các trạng thái đặc biệt của phần tử (ví dụ: \`:hover\`, \`:focus\`).
+- Pseudo-elements: Tạo kiểu cho một phần cụ thể của phần tử (ví dụ: \`::before\`, \`::first-letter\`).
+- Focus: Trạng thái khi một phần tử được chọn.
+
 ---
 
+### **Phần 1: Lớp giả (Pseudo-classes)**
+(Tóm tắt từ The CSS Podcast - 015: Pseudo-classes)
+
+Lớp giả trong CSS cho phép bạn áp dụng style dựa trên những **trạng thái** cụ thể của một phần tử hoặc vị trí của nó trong tài liệu, chứ không phải là tạo kiểu cho một phần của phần tử. Chúng được ký hiệu bằng một dấu hai chấm (\`:\`).
+
+#### **Các trạng thái tương tác**
+
+Các lớp giả này được kích hoạt dựa trên tương tác của người dùng.
+
+* **\`:hover\`**: Áp dụng khi người dùng di chuột (hoặc con trỏ) lên trên một phần tử.
+* **\`:active\`**: Áp dụng khi một phần tử đang được tương tác tích cực (ví dụ, lúc đang nhấn giữ chuột).
+* **\`:focus\`**: Áp dụng khi một phần tử có thể nhận focus (như \`<button>\`, \`<input>\`) đang được focus.
+* **\`:focus-within\`**: Áp dụng cho một phần tử cha khi **bất kỳ phần tử con nào** bên trong nó nhận focus.
+* **\`:focus-visible\`**: Một lớp giả thông minh, chỉ hiển thị kiểu focus (thường là viền ngoài) khi người dùng điều hướng bằng bàn phím (ví dụ: phím Tab), và ẩn đi khi người dùng tương tác bằng chuột. Rất tốt cho khả năng tiếp cận.
+* **\`:target\`**: Áp dụng cho phần tử có \`id\` khớp với phần fragment trong URL (phần sau dấu \`#\`).
+
+#### **Các trạng thái lịch sử (cho liên kết)**
+
+* **\`:link\`**: Áp dụng cho các thẻ \`<a>\` có thuộc tính \`href\` mà người dùng **chưa từng truy cập**.
+* **\`:visited\`**: Áp dụng cho các liên kết mà người dùng **đã truy cập**. Vì lý do bảo mật, bạn chỉ có thể thay đổi một số thuộc tính hạn chế như \`color\`, \`background-color\`, \`border-color\`.
+* **Lưu ý quan trọng (Quy tắc LVHA)**: Để đảm bảo các style hoạt động đúng, bạn nên định nghĩa các lớp giả cho liên kết theo thứ tự sau: **L**ink, **V**isited, **H**over, **A**ctive.
+
+#### **Các trạng thái của Form**
+
+* **\`:enabled\` / \`:disabled\`**: Áp dụng khi một phần tử form được cho phép hoặc bị vô hiệu hóa.
+* **\`:checked\` / \`:indeterminate\`**: \`:checked\` áp dụng cho checkbox hoặc radio button được chọn. \`:indeterminate\` là trạng thái "lơ lửng", không chọn cũng không bỏ chọn (ví dụ: checkbox "chọn tất cả" khi chỉ một vài mục con được chọn).
+* **\`:valid\` / \`:invalid\`**: Áp dụng khi giá trị của một trường input hợp lệ hoặc không hợp lệ theo các quy tắc validation của HTML5 (ví dụ: \`type="email"\`, \`pattern\`).
+* **\`:required\` / \`:optional\`**: Áp dụng cho các trường form được yêu cầu hoặc không bắt buộc.
+
+#### **Các lớp giả dựa trên vị trí và cấu trúc**
+
+* **\`:first-child\` / \`:last-child\`**: Chọn phần tử con đầu tiên / cuối cùng trong một nhóm anh em.
+* **\`:first-of-type\` / \`:last-of-type\`**: Chọn phần tử đầu tiên / cuối cùng của **loại đó** trong một nhóm anh em. (Khác với \`*-child\`, nó không yêu cầu phần tử đó phải là con đầu tiên/cuối cùng).
+* **\`:nth-child(An+B)\` / \`:nth-of-type(An+B)\`**: Chọn các phần tử ở các vị trí cụ thể hoặc theo một quy luật lặp lại (ví dụ \`(2n)\` để chọn các phần tử chẵn).
+* **\`:only-child\`**: Chọn một phần tử là con duy nhất của cha nó.
+* **\`:only-of-type\`**: Chọn một phần tử là con duy nhất của **loại đó**.
+* **\`:empty\`**: Chọn các phần tử không có bất kỳ con nào, kể cả khoảng trắng.
+
+#### **Loại trừ và nhóm**
+
+* **\`:is()\`**: Giúp viết các bộ chọn phức tạp một cách ngắn gọn hơn. Ví dụ: \`.post :is(h2, li, img)\` thay vì viết 3 bộ chọn riêng biệt.
+* **\`:not()\`**: Dùng để loại trừ các phần tử không khớp với bộ chọn bên trong. Ví dụ: \`a:not([class])\` sẽ chọn tất cả các liên kết không có thuộc tính \`class\`.
+
+---
+
+### **Phần 2: Phần tử giả (Pseudo-elements)**
+(Tóm tắt từ The CSS Podcast - 014: Pseudo-elements)
+
+Phần tử giả giống như việc thêm hoặc nhắm mục tiêu vào một **phần tử phụ** mà không cần thêm HTML. Chúng cho phép bạn tạo kiểu cho những phần mà không thể chọn bằng các bộ chọn thông thường. Cú pháp hiện đại sử dụng hai dấu hai chấm (\`::\`).
+
+* **\`::before\` / \`::after\`**:
+    * Tạo ra một phần tử con giả **bên trong** một phần tử đã chọn, nằm trước hoặc sau nội dung của nó.
+    * **Bắt buộc** phải có thuộc tính \`content\` (dù là rỗng \`""\`) để chúng hiển thị.
+    * Nội dung có thể là văn bản, \`url()\` của hình ảnh, hoặc một \`counter()\`.
+    * Chúng không hoạt động trên các phần tử không thể có con như \`<img>\` hay \`<input>\`.
+
+* **\`::first-letter\`**: Chọn và tạo kiểu cho ký tự đầu tiên của một khối văn bản. Thường dùng để tạo hiệu ứng chữ hoa đầu dòng (drop cap).
+
+* **\`::first-line\`**: Chọn và tạo kiểu cho dòng văn bản đầu tiên của một khối.
+
+* **\`::marker\`**: Dùng để tạo kiểu cho dấu đầu dòng (bullet) của các mục \`<li>\` hoặc mũi tên của thẻ \`<summary>\`. Đây là cách hiện đại và linh hoạt hơn so với \`list-style-type\`.
+
+* **\`::selection\`**: Tạo kiểu cho phần văn bản được người dùng bôi đen. Chỉ một số thuộc tính CSS hạn chế được phép sử dụng.
+
+* **\`::placeholder\`**: Tạo kiểu cho văn bản giữ chỗ (placeholder) của các phần tử form như \`<input>\`. **Lưu ý**: Placeholder không thể thay thế cho thẻ \`<label>\`.
+
+* **\`::backdrop\`**: Tạo kiểu cho lớp nền phía sau một phần tử đang ở chế độ toàn màn hình (ví dụ: \`<dialog>\`, \`<video>\`).
+
+* **\`::cue\`**: Tạo kiểu cho phụ đề WebVTT của thẻ \`<video>\`.
+
+---
+
+### **Phần 3: Trạng thái Focus**
+(Tóm tắt từ The CSS Podcast - 018: Focus)
+
+Focus là trạng thái một phần tử nhận được khi người dùng tương tác với nó, đặc biệt là qua bàn phím. Quản lý focus một cách cẩn thận là cực kỳ quan trọng đối với khả năng tiếp cận (accessibility).
+
+#### **Tại sao Focus lại quan trọng?**
+
+Nó giúp những người dùng điều hướng bằng bàn phím hoặc các thiết bị hỗ trợ khác biết được họ đang ở đâu trên trang. Nếu một phần tử được focus mà không có chỉ báo trực quan, người dùng có thể bị "lạc" và không thể tương tác với trang web một cách hiệu quả.
+
+#### **Cách các phần tử nhận Focus**
+
+* **Mặc định**: Các phần tử tương tác như \`<a>\`, \`<button>\`, \`<input>\`, \`<select>\` có thể nhận focus một cách tự nhiên.
+* **Thuộc tính \`tabindex\`**:
+    * \`tabindex="0"\`: Cho phép một phần tử không tương tác (như \`<div>\`) có thể nhận focus bằng phím Tab và tham gia vào thứ tự điều hướng tự nhiên của trang.
+    * \`tabindex="-1"\`: Cho phép một phần tử nhận focus **chỉ thông qua mã lệnh** (JavaScript) hoặc khi URL trỏ đến \`id\` của nó. Nó không thể được focus bằng phím Tab.
+    * \`tabindex > 0\`: **Thực hành xấu, nên tránh.** Nó tạo ra một thứ tự focus tùy chỉnh, thường gây khó hiểu và phá vỡ luồng điều hướng tự nhiên.
+
+#### **Tạo kiểu cho Focus**
+
+Trình duyệt mặc định sẽ hiển thị một vòng focus (focus ring) xung quanh phần tử được focus. Bạn có thể tùy chỉnh nó bằng CSS.
+
+* **Thực hành tốt nhất**:
+    1.  **Không bao giờ dùng \`outline: none;\`** mà không cung cấp một kiểu thay thế rõ ràng. Đây là một lỗi nghiêm trọng về khả năng tiếp cận.
+    2.  Nếu muốn loại bỏ outline cho người dùng chuột, hãy sử dụng lớp giả \`:focus-visible\` để hiển thị lại kiểu focus cho người dùng bàn phím.
+    3.  Sử dụng thuộc tính \`outline\` thay vì \`box-shadow\` để tạo kiểu cho focus ring. \`box-shadow\` có thể không hiển thị trong Chế độ Tương phản cao của Windows (Windows High Contrast Mode).
+    4.  Sử dụng \`outline-offset\` để tạo khoảng cách giữa outline và phần tử mà không ảnh hưởng đến layout.
+    5.  Đảm bảo kiểu focus của bạn có độ tương phản cao và dễ nhận biết so với trạng thái bình thường.`;
+---
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        <ul class="list-disc pl-6">
-            <li>Pseudo-classes: Tạo kiểu cho các trạng thái đặc biệt của phần tử (ví dụ: <code>:hover</code>, <code>:focus</code>).</li>
-            <li>Pseudo-elements: Tạo kiểu cho một phần cụ thể của phần tử (ví dụ: <code>::before</code>, <code>::first-letter</code>).</li>
-            <li>Focus: Trạng thái khi một phần tử được chọn.</li>
-        </ul>
-        
-    </ReadLayout>
+  <ReadLayout links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

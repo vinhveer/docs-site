@@ -1,21 +1,491 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Nội dung chính
+
+- Layout: Các khái niệm bố cục chung.
+- Flexbox: Bố cục một chiều linh hoạt.
+- Grid: Bố cục hai chiều dạng lưới.
+- Logical Properties: Các thuộc tính logic cho bố cục đa hướng.
+- Spacing: Kiểm soát khoảng cách giữa các phần tử.
+- Z-index and stacking contexts: Quản lý thứ tự xếp chồng của các phần tử.
+- Overflow: Xử lý nội dung tràn ra ngoài hộp chứa.
+
+### **Phần 1: Layout tổng quan (Layout)**
+(Tóm tắt từ The CSS Podcast - 009: Layout)
+
+Layout trong CSS là cách bạn sắp xếp các phần tử trên một trang web. CSS hiện đại cung cấp các công cụ cực kỳ mạnh mẽ để giải quyết các vấn đề về layout, từ bố cục một chiều đơn giản đến lưới hai chiều phức tạp.
+
+#### **Thuộc tính \`display\`**
+
+Thuộc tính \`display\` có hai vai trò chính:
+
+1.  **Xác định cách hộp hiển thị bên ngoài (Outer display type)**: Nó quyết định phần tử sẽ hoạt động như \`inline\` hay \`block\`.
+    * **\`display: inline\`**: Phần tử hoạt động như một từ trong câu, nằm cùng hàng với các phần tử khác. Bạn **không thể** đặt \`width\` và \`height\` rõ ràng. \`margin\` và \`padding\` theo chiều dọc sẽ không được các phần tử xung quanh tôn trọng. Ví dụ: \`<span>\`, \`<strong>\`.
+    * **\`display: block\`**: Phần tử sẽ chiếm một dòng mới và theo mặc định sẽ mở rộng hết chiều rộng có sẵn. \`margin\` và \`padding\` ở mọi phía đều được tôn trọng. Ví dụ: \`<div>\`, \`<p>\`.
+
+2.  **Xác định cách các con của nó hoạt động (Inner display type)**: Nó thiết lập một "bối cảnh định dạng" cho các phần tử con.
+    * **\`display: flex;\`**: Biến phần tử cha thành một hộp cấp khối (block-level), đồng thời biến các phần tử con trực tiếp của nó thành các **item flex (flex items)**. Điều này cho phép bạn sử dụng các thuộc tính của Flexbox để căn chỉnh, sắp xếp và phân phối không gian cho các con.
+    * **\`display: grid;\`**: Tương tự, nó kích hoạt bối cảnh định dạng Grid, biến các con thành các **item grid (grid items)**.
+
+#### **Flexbox và Grid: Tổng quan**
+
+Đây là hai cơ chế layout chính trong CSS hiện đại.
+
+* **Flexbox (\`display: flex\`)**:
+    * Được thiết kế cho layout **một chiều (one-dimensional)** – sắp xếp các mục theo một hàng hoặc một cột.
+    * Rất giỏi trong việc phân phối không gian và căn chỉnh các mục dọc theo một trục duy nhất.
+    * Ví dụ: bạn có thể dễ dàng làm cho các item con co giãn để lấp đầy không gian bằng \`flex: 1;\`.
+
+* **Grid (\`display: grid\`)**:
+    * Được thiết kế cho layout **hai chiều (two-dimensional)** – sắp xếp các mục trên cả hàng và cột cùng một lúc.
+    * Cho phép kiểm soát vị trí chính xác của các mục trong một lưới.
+    * Bạn có thể tạo ra các hệ thống cột phức tạp một cách dễ dàng và chỉ định một mục có thể kéo dài qua nhiều hàng hoặc cột. Ví dụ: \`grid-template-columns: repeat(12, 1fr);\`.
+
+#### **Layout trong luồng thông thường (Flow Layout)**
+
+Khi không sử dụng Flexbox hay Grid, bạn có thể dùng các phương pháp sau:
+
+* **\`display: inline-block\`**: Một sự kết hợp. Phần tử sẽ nằm trên cùng một dòng như \`inline\`, nhưng bạn có thể đặt \`width\`, \`height\`, và các \`margin\`/\`padding\` dọc như \`block\`.
+
+* **\`float\`**: Một phương pháp cũ hơn, chủ yếu dùng để cho phép văn bản bao quanh một hình ảnh. Ví dụ: \`img { float: left; }\`.
+    * **Lưu ý quan trọng**: Các phần tử \`float\` có thể phá vỡ layout của các phần tử theo sau nó. Để khắc phục, bạn cần "clear" float bằng cách dùng \`clear: both\` trên phần tử kế tiếp, hoặc dùng \`display: flow-root\` trên phần tử cha chứa phần tử \`float\`.
+
+* **Multicolumn Layout (Layout đa cột)**: Dùng để chia một khối nội dung dài (ví dụ một danh sách) thành nhiều cột như báo giấy.
+    * Ví dụ: \`column-count: 2;\` hoặc \`column-width: 260px;\` để trình duyệt tự động tạo số cột phù hợp.
+
+* **Positioning (Định vị)**: Thuộc tính \`position\` thay đổi cách một phần tử hành xử trong luồng tài liệu.
+    * \`static\`: Mặc định, nằm trong luồng bình thường.
+    * \`relative\`: Dịch chuyển phần tử so với vị trí **gốc** của nó. Quan trọng nhất, nó trở thành **khối chứa (containing block)** cho các phần tử con có \`position: absolute\`.
+    * \`absolute\`: Lấy phần tử **ra khỏi luồng tài liệu**. Nó sẽ được định vị so với **tổ tiên có \`position: relative\` gần nhất**. Các nội dung khác sẽ lấp vào khoảng trống mà nó để lại.
+    * \`fixed\`: Tương tự \`absolute\` nhưng được định vị so với **viewport (cửa sổ trình duyệt)**. Nó sẽ giữ nguyên vị trí khi bạn cuộn trang.
+    * \`sticky\`: Một sự kết hợp. Nó hoạt động như \`relative\` cho đến khi người dùng cuộn trang đến một điểm nhất định, lúc đó nó sẽ "dính" lại và hoạt động như \`fixed\`.
+
+---
+
+### **Phần 2: Tìm hiểu sâu về Flexbox**
+(Tóm tắt từ The CSS Podcast - 010: Flexbox)
+
+Flexbox là một mô hình layout được thiết kế cho nội dung một chiều. Nó cực kỳ hiệu quả trong việc sắp xếp một nhóm các mục có kích thước khác nhau và trả về bố cục tốt nhất cho chúng.
+
+#### **Khái niệm cốt lõi: Trục chính và Trục ngang**
+
+Hiểu rõ hai trục này là chìa khóa của Flexbox:
+
+* **Trục chính (Main Axis)**: Đây là trục được xác định bởi thuộc tính \`flex-direction\`.
+    * Nếu \`flex-direction: row\` (mặc định), trục chính sẽ chạy **theo chiều ngang**.
+    * Nếu \`flex-direction: column\`, trục chính sẽ chạy **theo chiều dọc**.
+    * Các item flex sẽ được sắp xếp và phân phối không gian dọc theo trục này.
+
+* **Trục ngang (Cross Axis)**: Đây là trục vuông góc với trục chính.
+    * Nếu trục chính là ngang, trục ngang sẽ là dọc, và ngược lại.
+    * Trục này được dùng để căn chỉnh các item riêng lẻ hoặc cả nhóm item.
+
+#### **Các thuộc tính cho Vùng chứa Flex (Flex Container)**
+
+* \`display: flex\`: Kích hoạt bối cảnh Flexbox.
+* \`flex-direction\`: Xác định hướng của trục chính.
+    * \`row\` (mặc định): Từ trái sang phải.
+    * \`row-reverse\`: Từ phải sang trái.
+    * \`column\`: Từ trên xuống dưới.
+    * \`column-reverse\`: Từ dưới lên trên.
+    * **Lưu ý về khả năng tiếp cận**: Việc dùng các giá trị \`-reverse\` chỉ thay đổi thứ tự hiển thị, không thay đổi thứ tự trong DOM. Điều này có thể gây nhầm lẫn cho người dùng sử dụng trình đọc màn hình hoặc điều hướng bằng bàn phím.
+* \`flex-wrap\`: Quyết định các item có xuống dòng hay không.
+    * \`nowrap\` (mặc định): Các item sẽ cố gắng co lại và nằm trên một dòng, có thể gây tràn.
+    * \`wrap\`: Các item sẽ tự động xuống dòng mới khi không đủ không gian.
+* \`flex-flow\`: Là thuộc tính viết tắt cho \`flex-direction\` và \`flex-wrap\`. Ví dụ: \`flex-flow: column wrap;\`.
+* \`justify-content\`: Căn chỉnh và phân phối không gian giữa các item dọc theo **Trục chính**.
+    * Các giá trị phổ biến: \`flex-start\`, \`flex-end\`, \`center\`, \`space-between\`, \`space-around\`.
+* \`align-items\`: Căn chỉnh các item dọc theo **Trục ngang**.
+    * Các giá trị phổ biến: \`stretch\` (mặc định, làm các item cao bằng nhau), \`flex-start\`, \`flex-end\`, \`center\`, \`baseline\`.
+* \`align-content\`: Chỉ có tác dụng khi có nhiều dòng (do \`flex-wrap: wrap\`). Nó dùng để phân phối không gian giữa các dòng dọc theo **Trục ngang**.
+
+#### **Các thuộc tính cho các Mục con (Flex Items)**
+
+* \`flex\`: Thuộc tính viết tắt cho \`flex-grow\`, \`flex-shrink\`, và \`flex-basis\`. Đây là thuộc tính quan trọng nhất để điều khiển sự linh hoạt.
+    * \`flex-grow\`: (Một số) Khả năng "lớn lên" của item nếu có không gian thừa. \`flex-grow: 1\` có nghĩa là item sẽ cố gắng lấp đầy không gian trống.
+    * \`flex-shrink\`: (Một số) Khả năng "co lại" của item nếu không đủ không gian.
+    * \`flex-basis\`: (Độ dài hoặc \`auto\`) Kích thước cơ sở của item trước khi không gian được phân phối.
+    * **Các giá trị phổ biến**:
+        * \`flex: 0 1 auto;\` (giá trị mặc định, hay \`flex: initial\`): Item không lớn lên, có thể co lại.
+        * \`flex: 1 1 auto;\` (hay \`flex: auto\`): Item có thể lớn lên và co lại, kích thước được phân chia dựa trên kích thước nội dung.
+        * \`flex: 1 1 0;\` (hay \`flex: 1\`): Item có thể lớn lên và co lại, nhưng không gian được chia đều cho các item, bỏ qua kích thước nội dung ban đầu.
+* \`order\`: (Một số) Thay đổi thứ tự hiển thị của một item. Mặc định là \`0\`. Số nhỏ hơn sẽ được hiển thị trước. **Cũng cần cẩn trọng về vấn đề khả năng tiếp cận** như \`flex-direction\`.
+* \`align-self\`: Cho phép ghi đè giá trị \`align-items\` của vùng chứa cho một item cụ thể.
+
+#### **Mẹo và Kỹ thuật hữu ích**
+
+* **Làm sao để căn giữa một phần tử theo cả chiều dọc và chiều ngang?**
+    Rất đơn giản với Flexbox:
+    \`\`\`css
+    .parent {
+      display: flex;
+      justify-content: center; /* Căn giữa theo trục chính (ngang) */
+      align-items: center;    /* Căn giữa theo trục ngang (dọc) */
+    }
+    \`\`\`
+* **Tách một item ra khỏi nhóm:**
+    Flexbox không có thuộc tính \`justify-self\`. Tuy nhiên, bạn có thể dùng \`margin: auto\` để đẩy một item ra xa các item khác.
+    \`\`\`css
+    .item-cuoi-cung {
+      margin-left: auto; /* Đẩy item này sang tận cùng bên phải */
+    }
+    \`\`\`
+
+---
+
+### **Tổng quan về CSS Grid (Lưới)**
+(Tóm tắt từ The CSS Podcast - 011: Grid)
+
+CSS Grid là một hệ thống layout **hai chiều (2D)**, cho phép bạn sắp xếp nội dung theo cả **hàng (rows) và cột (columns)** cùng một lúc. Điều này làm cho Grid trở thành công cụ lý tưởng để xây dựng các cấu trúc layout phức tạp cho toàn bộ trang web, chẳng hạn như bố cục header, sidebar, body, và footer.
+
+#### **Các thuật ngữ chính của Grid**
+
+Để làm việc với Grid, bạn cần nắm vững các thuật ngữ sau:
+
+* **Vùng chứa Lưới (Grid Container)**: Là phần tử HTML được áp dụng \`display: grid;\`.
+* **Mục con Lưới (Grid Item)**: Là các phần tử con **trực tiếp** của Grid Container.
+* **Đường lưới (Grid Lines)**: Là các đường kẻ ngang và dọc tạo nên cấu trúc của lưới. Nếu bạn có 4 cột, bạn sẽ có 5 đường lưới dọc, được đánh số từ 1 đến 5.
+* **Rãnh lưới (Grid Track)**: Là không gian giữa hai đường lưới liền kề. Chúng ta có rãnh cột (column track) và rãnh hàng (row track).
+* **Ô lưới (Grid Cell)**: Là đơn vị không gian nhỏ nhất trong lưới, được tạo bởi giao điểm của một rãnh hàng và một rãnh cột.
+* **Vùng lưới (Grid Area)**: Là một không gian hình chữ nhật bao gồm một hoặc nhiều ô lưới, được tạo ra khi một mục con kéo dài qua nhiều rãnh.
+* **Khoảng trống (Gap)**: Là khoảng cách giữa các rãnh.
+
+#### **Tạo một Lưới cơ bản**
+
+Bạn định nghĩa một lưới bằng cách sử dụng các thuộc tính \`grid-template-columns\` và \`grid-template-rows\` trên vùng chứa.
+
+\`\`\`css
+.container {
+  display: grid;
+  /* Tạo 3 cột với các kích thước khác nhau */
+  grid-template-columns: 200px 1fr auto;
+  /* Tạo 2 hàng */
+  grid-template-rows: 100px 300px;
+  /* Khoảng cách giữa các hàng và cột */
+  gap: 20px;
+}
+\`\`\`
+
+#### **Định kích thước cho các Rãnh (Tracks)**
+
+Grid cung cấp nhiều cách linh hoạt để định kích thước cho các rãnh.
+
+* **Từ khóa kích thước nội tại (Intrinsic Sizing Keywords)**:
+    * \`min-content\`: Làm cho rãnh hẹp nhất có thể mà không làm tràn nội dung (thường là bằng chiều rộng của từ dài nhất).
+    * \`max-content\`: Làm cho rãnh đủ rộng để chứa toàn bộ nội dung trên một dòng duy nhất.
+    * \`fit-content(value)\`: Hoạt động như \`max-content\` nhưng sẽ không bao giờ rộng hơn giá trị \`value\` được cung cấp.
+
+* **Đơn vị \`fr\` (Fractional Unit - Đơn vị phần)**:
+    * Đây là đơn vị đặc biệt của Grid, dùng để biểu thị một **phần** của không gian còn trống trong vùng chứa. Nó hoạt động tương tự như \`flex: 1\` trong Flexbox.
+    * Ví dụ: \`grid-template-columns: 1fr 2fr;\` sẽ chia không gian còn lại thành 3 phần, cột đầu tiên chiếm 1 phần và cột thứ hai chiếm 2 phần.
+
+* **Hàm \`minmax(min, max)\`**:
+    * Cho phép bạn đặt kích thước tối thiểu và tối đa cho một rãnh. Rất hữu ích để tạo ra các layout linh hoạt.
+    * Ví dụ: \`minmax(200px, 1fr)\` nghĩa là rãnh sẽ có chiều rộng tối thiểu là 200px, và có thể lớn hơn để chiếm một phần không gian trống.
+    * **Mẹo chuyên nghiệp**: Dùng \`minmax(0, 1fr)\` thay vì \`1fr\` để các rãnh chia đều không gian một cách chính xác, bỏ qua kích thước nội dung ban đầu của chúng.
+
+* **Hàm \`repeat(count, track-list)\`**:
+    * Dùng để lặp lại một mẫu rãnh mà không cần viết tay.
+    * Ví dụ: \`repeat(12, 1fr)\` sẽ tạo ra một lưới 12 cột bằng nhau.
+
+* **\`auto-fill\` và \`auto-fit\`**:
+    * Dùng bên trong \`repeat()\` để tạo ra một số lượng cột tự động dựa trên không gian có sẵn. Đây là chìa khóa để tạo layout đáp ứng (responsive) mà **không cần Media Queries**.
+    * Ví dụ: \`grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\` sẽ tạo ra nhiều cột nhất có thể, mỗi cột có chiều rộng tối thiểu 250px và sẽ co giãn để lấp đầy không gian.
+    * **Sự khác biệt**: Khi không gian trống, \`auto-fill\` sẽ giữ lại các rãnh trống rỗng, trong khi \`auto-fit\` sẽ thu gọn các rãnh trống đó về 0, cho phép các mục hiện có co giãn để chiếm không gian.
+
+#### **Sắp xếp các mục con (Placing Items)**
+
+* **Tự động sắp xếp (Auto-placement)**:
+    * Mặc định, Grid sẽ tự động đặt các mục con vào từng ô lưới theo thứ tự trong HTML.
+    * \`grid-auto-flow: column\`: Thay đổi hướng sắp xếp mặc định từ hàng sang cột.
+    * \`grid-auto-flow: dense\`: Cho phép Grid lấp đầy các khoảng trống trong lưới bằng cách lấy các mục ở phía sau để đặt vào, điều này có thể làm thay đổi thứ tự hiển thị.
+
+* **Sắp xếp thủ công**:
+    1.  **Theo đường lưới (Line-based placement)**: Sử dụng các thuộc tính \`grid-column-start\`, \`grid-column-end\`, \`grid-row-start\`, \`grid-row-end\` (hoặc các thuộc tính viết tắt \`grid-column\` và \`grid-row\`).
+        * Ví dụ: \`grid-column: 1 / 3;\` sẽ làm mục con kéo dài từ đường lưới cột 1 đến đường lưới cột 3.
+        * Bạn có thể dùng số âm. \`grid-column: 1 / -1;\` sẽ làm mục con kéo dài từ đường lưới đầu tiên đến đường lưới cuối cùng của **lưới tường minh (explicit grid)**.
+
+    2.  **Theo tên đường lưới (Named grid lines)**: Bạn có thể đặt tên cho các đường lưới để code dễ đọc hơn.
+        * Ví dụ: \`grid-template-columns: [main-start] 1fr [content-start] 3fr [main-end];\` và sau đó dùng \`grid-column: main-start / main-end;\`.
+
+    3.  **Theo vùng mẫu (Grid Template Areas)**: Đây là cách sắp xếp trực quan nhất.
+        * **Bước 1**: Đặt tên cho các mục con bằng thuộc tính \`grid-area\`. Ví dụ: \`header { grid-area: header; }\`.
+        * **Bước 2**: "Vẽ" layout trên vùng chứa bằng thuộc tính \`grid-template-areas\`.
+            \`\`\`css
+            .container {
+              grid-template-areas:
+                "header header header"
+                "sidebar content content"
+                "footer footer footer";
+            }
+            \`\`\`
+        * Để tạo một ô trống, hãy sử dụng dấu chấm (\`.\`).
+
+#### **Căn chỉnh (Alignment)**
+
+Grid sử dụng các thuộc tính căn chỉnh tương tự Flexbox.
+
+* \`justify-*\` dùng cho **trục inline** (thường là chiều ngang).
+* \`align-*\` dùng cho **trục block** (thường là chiều dọc).
+
+* **Phân phối không gian giữa các rãnh**:
+    * \`justify-content\`: Phân phối không gian theo chiều ngang nếu có khoảng trống.
+    * \`align-content\`: Phân phối không gian theo chiều dọc nếu có khoảng trống.
+
+* **Căn chỉnh các mục con bên trong vùng của chúng**:
+    * \`justify-items\`: Căn chỉnh tất cả các mục con theo chiều ngang bên trong vùng lưới của chúng.
+    * \`align-items\`: Căn chỉnh tất cả các mục con theo chiều dọc.
+    * \`justify-self\` và \`align-self\`: Ghi đè các giá trị trên cho một mục con cụ thể.
+
+Mặc định, các mục con sẽ tự kéo dài (\`stretch\`) để lấp đầy vùng lưới được gán cho chúng.
+
+---
+
+### **Phần 1: Thuộc tính Logic (Logical Properties)**
+(Tóm tắt từ The CSS Podcast - 012: Logical Properties)
+
+Các thuộc tính CSS truyền thống như \`margin-left\` hay \`padding-top\` được gọi là **thuộc tính vật lý** vì chúng dựa trên các hướng vật lý của màn hình (trên, phải, dưới, trái). Điều này gây ra vấn đề khi làm việc với các ngôn ngữ đọc từ phải sang trái (RTL) hoặc các chế độ viết dọc, vì layout sẽ không tự động điều chỉnh.
+
+**Thuộc tính logic** ra đời để giải quyết vấn đề này. Thay vì dựa trên hướng vật lý, chúng dựa trên **luồng chảy của nội dung**.
+
+#### **Thuật ngữ chính**
+
+* **Luồng khối (Block Flow)**: Hướng mà các khối nội dung được xếp chồng lên nhau. Trong tiếng Anh, luồng này chạy từ **trên xuống dưới**.
+* **Luồng nội tuyến (Inline Flow)**: Hướng mà văn bản chảy trong một câu. Trong tiếng Anh, luồng này chạy từ **trái sang phải**.
+
+Thuộc tính logic sử dụng các thuật ngữ \`start\` (bắt đầu) và \`end\` (kết thúc) cho cả hai luồng này:
+
+* **Vật lý** \`top\` → **Logic** \`block-start\`
+* **Vật lý** \`bottom\` → **Logic** \`block-end\`
+* **Vật lý** \`left\` → **Logic** \`inline-start\`
+* **Vật lý** \`right\` → **Logic** \`inline-end\`
+
+#### **Áp dụng Thuộc tính Logic**
+
+* **Kích thước (Sizing)**:
+    * \`width\` → \`inline-size\`
+    * \`height\` → \`block-size\`
+    * \`min-width\` → \`min-inline-size\`
+    * \`max-height\` → \`max-block-size\`
+
+* **Khoảng cách (Spacing)**:
+    * \`margin-left\` → \`margin-inline-start\`
+    * \`padding-right\` → \`padding-inline-end\`
+    * **Viết tắt**: \`margin-inline\` (cho lề trái/phải logic), \`padding-block\` (cho đệm trên/dưới logic).
+
+* **Định vị (Positioning)**:
+    * \`top\` → \`inset-block-start\`
+    * \`left\` → \`inset-inline-start\`
+    * **Viết tắt**: \`inset-inline\`, \`inset-block\`, và \`inset\`.
+
+* **Viền (Borders)**:
+    * \`border-left\` → \`border-inline-start\`
+    * \`border-bottom-right-radius\` → \`border-end-end-radius\` (bán kính ở góc giao giữa \`block-end\` và \`inline-end\`).
+
+* **Đơn vị mới**:
+    * \`vi\`: 1% kích thước của viewport theo chiều **inline**. Tương đương logic của \`vw\`.
+    * \`vb\`: 1% kích thước của viewport theo chiều **block**. Tương đương logic của \`vh\`.
+
+#### **Giải quyết vấn đề ban đầu**
+
+Để giải quyết vấn đề icon và văn bản, thay vì dùng \`margin-right\` cho icon, chúng ta sẽ dùng \`margin-inline-end\`.
+
+\`\`\`css
+/* Cách cũ, chỉ hoạt động tốt với LTR */
+p svg {
+  margin-right: 0.5em;
+}
+
+/* Cách mới với thuộc tính logic, hoạt động với mọi hướng đọc */
+p svg {
+  margin-inline-end: 0.5em;
+}
+\`\`\`
+
+Bằng cách này, khoảng cách sẽ luôn được tạo ra ở phía cuối của icon theo luồng đọc, dù là trái-sang-phải hay phải-sang-trái.
+
+---
+
+### **Phần 2: Khoảng cách (Spacing)**
+(Tóm tắt từ The CSS Podcast - 013: Spacing)
+
+CSS cung cấp nhiều cách để tạo không gian giữa và xung quanh các phần tử.
+
+#### **1. Khoảng cách bằng HTML**
+Bạn có thể dùng thẻ \`<br>\` (ngắt dòng) và \`<hr>\` (đường kẻ ngang) hoặc ký tự \`&nbsp;\` (khoảng trắng không ngắt dòng).
+**Lưu ý quan trọng**: Chỉ nên dùng các thẻ HTML này khi chúng có ý nghĩa về mặt ngữ nghĩa (ví dụ \`<hr>\` để tách biệt nội dung), không nên dùng chúng chỉ để tạo khoảng trống trang trí.
+
+#### **2. \`margin\` (Lề)**
+\`margin\` tạo ra không gian **bên ngoài** một phần tử.
+
+* **Sụp lề (Margin Collapse)**: Đây là một khái niệm quan trọng và đôi khi khó hiểu. Khi hai phần tử khối xếp chồng lên nhau theo chiều dọc, \`margin-bottom\` của phần tử trên và \`margin-top\` của phần tử dưới sẽ không cộng dồn. Thay vào đó, khoảng cách giữa chúng sẽ bằng **giá trị \`margin\` lớn hơn**.
+    * Ví dụ: \`h1 { margin-bottom: 2rem; }\` và \`p { margin-top: 3rem; }\`. Khoảng cách giữa chúng sẽ là \`3rem\`, không phải \`5rem\`.
+    * Sụp lề **không** xảy ra với lề ngang, hoặc bên trong các container Flexbox và Grid.
+
+* **Căn giữa bằng \`margin: auto\`**: Một kỹ thuật phổ biến để căn giữa một phần tử khối có chiều rộng cố định.
+    \`\`\`css
+    .wrapper {
+      max-width: 800px;
+      margin: 0 auto; /* 0 cho trên/dưới, auto cho trái/phải */
+    }
+    \`\`\`
+
+* **Lề âm (Negative Margin)**: Có thể dùng giá trị âm để **giảm** khoảng cách, thậm chí làm các phần tử chồng lên nhau.
+
+#### **3. \`padding\` (Đệm)**
+\`padding\` tạo ra không gian **bên trong** một phần tử, giữa nội dung và đường viền. Nó giống như lớp đệm cách nhiệt cho hộp. \`padding\` không bị "sụp" như \`margin\`.
+
+#### **4. \`position\` (Định vị)**
+Khi một phần tử có \`position\` khác \`static\` (ví dụ: \`relative\`, \`absolute\`, \`fixed\`), bạn có thể dùng các thuộc tính \`top\`, \`right\`, \`bottom\`, \`left\` (hoặc các thuộc tính logic tương đương như \`inset-block-start\`) để dịch chuyển và tạo không gian cho nó.
+
+#### **5. \`gap\` trong Grid và Flexbox**
+Đây là cách hiện đại và được ưa chuộng nhất để tạo khoảng cách **giữa** các mục con trong một layout Flexbox hoặc Grid.
+
+* \`gap\` là thuộc tính viết tắt cho \`row-gap\` và \`column-gap\`.
+* Nó chỉ tạo ra khoảng trống ở giữa các mục, không tạo ra khoảng trống thừa ở đầu hoặc cuối container. Điều này giúp giải quyết nhiều vấn đề mà \`margin\` thường gây ra.
+
+\`\`\`css
+.container {
+  display: grid;
+  gap: 20px; /* Tạo khoảng trống 20px giữa cả hàng và cột */
+}
+\`\`\`
+
+#### **Tạo khoảng cách nhất quán**
+
+Để xây dựng một giao diện người dùng hài hòa, bạn nên chọn một chiến lược tạo khoảng cách nhất quán. Một cách tuyệt vời để làm điều này là sử dụng **Thuộc tính Tùy chỉnh CSS (CSS Custom Properties)**.
+
+\`\`\`css
+:root {
+  --spacing-small: 8px;
+  --spacing-medium: 16px;
+  --spacing-large: 32px;
+}
+
+.element {
+  margin-bottom: var(--spacing-medium);
+  padding: var(--spacing-large);
+}
+\`\`\`
+
+Cách làm này giúp bạn dễ dàng quản lý và cập nhật hệ thống khoảng cách trên toàn bộ trang web của mình.
+
+---
+
+### **Phần 1: Z-index và Ngữ cảnh xếp chồng (Stacking Contexts)**
+(Tóm tắt từ The CSS Podcast - 019: z-index)
+
+Khi các phần tử trên trang web chồng lên nhau, \`z-index\` và ngữ cảnh xếp chồng sẽ quyết định phần tử nào nằm trên, phần tử nào nằm dưới.
+
+#### **\`z-index\`**
+
+Thuộc tính \`z-index\` dùng để thiết lập thứ tự xếp lớp của các phần tử trên **trục Z** (trục không gian 3D hướng từ trong ra ngoài màn hình).
+
+* Nó chấp nhận một giá trị số (nguyên, dương hoặc âm).
+* Phần tử có \`z-index\` cao hơn sẽ nằm trên phần tử có \`z-index\` thấp hơn.
+* Nếu không có \`z-index\`, thứ tự mặc định sẽ dựa trên thứ tự xuất hiện trong mã HTML (phần tử xuất hiện sau sẽ nằm trên).
+
+**Lưu ý quan trọng:**
+Đối với các phần tử trong luồng bình thường, để \`z-index\` có hiệu lực, thuộc tính \`position\` của nó phải được đặt thành một giá trị **khác \`static\`** (ví dụ: \`relative\`, \`absolute\`, \`fixed\`, hoặc \`sticky\`). Đây là lỗi thường gặp nhất khi làm việc với \`z-index\`. (Tuy nhiên, trong Flexbox và Grid, bạn có thể thay đổi \`z-index\` của các item con mà không cần \`position\`).
+
+* **\`z-index\` âm**: Một giá trị âm (ví dụ \`z-index: -1;\`) có thể đặt một phần tử nằm **phía sau** phần tử cha của nó, nhưng chỉ khi phần tử cha đó chưa tạo ra một ngữ cảnh xếp chồng mới.
+
+#### **Ngữ cảnh xếp chồng (Stacking Context)**
+
+Đây là khái niệm cốt lõi và quan trọng nhất để hiểu \`z-index\`.
+
+* **Định nghĩa**: Một ngữ cảnh xếp chồng là một nhóm các phần tử có chung một cha và **di chuyển cùng nhau trên trục Z như một khối thống nhất**.
+* **Quy tắc vàng**: \`z-index\` của một phần tử con **luôn luôn tương đối so với ngữ cảnh xếp chồng của cha nó**. Điều này có nghĩa là, một phần tử con với \`z-index: 9999\` vẫn có thể nằm dưới một phần tử khác có \`z-index: 2\` nếu cha của phần tử \`z-index: 9999\` nằm trong một ngữ cảnh xếp chồng có \`z-index\` thấp hơn.
+
+**Cách tạo một Ngữ cảnh xếp chồng mới:**
+
+Một phần tử sẽ tạo ra một ngữ cảnh xếp chồng mới khi nó thỏa mãn một trong các điều kiện sau:
+
+1.  Là phần tử gốc của tài liệu (\`<html>\`).
+2.  Có \`position\` là \`absolute\` hoặc \`relative\` và \`z-index\` khác \`auto\`.
+3.  Có \`position\` là \`fixed\` hoặc \`sticky\`.
+4.  Là một item con của Flexbox hoặc Grid container và có \`z-index\` khác \`auto\`.
+5.  Có thuộc tính \`opacity\` nhỏ hơn \`1\`.
+6.  Có bất kỳ thuộc tính \`transform\`, \`filter\`, \`perspective\`, hoặc \`clip-path\` nào khác giá trị mặc định.
+7.  Có thuộc tính \`will-change\` được chỉ định.
+
+Việc một số thuộc tính như \`transform\` hay \`opacity\` tạo ra ngữ cảnh xếp chồng mới là để giúp trình duyệt tối ưu hóa hiệu suất bằng cách tạo ra các **lớp tổng hợp (composite layers)**, được xử lý bởi GPU.
+
+---
+
+### **Phần 2: Overflow (Tràn nội dung)**
+(Tóm tắt từ The CSS Podcast - 034: Overflow)
+
+\`Overflow\` xảy ra khi nội dung của một phần tử lớn hơn kích thước của hộp chứa nó. CSS cung cấp các công cụ để kiểm soát hành vi này.
+
+#### **1. Tràn nội dung trên một dòng với \`text-overflow\`**
+
+Thuộc tính này dùng để xử lý văn bản trên **một dòng duy nhất** khi nó không vừa với hộp chứa. Để \`text-overflow\` hoạt động, bạn phải có đủ 3 thuộc tính sau:
+
+\`\`\`css
+p {
+  /* Cắt xén nội dung bị tràn */
+  overflow: hidden;
+  /* Ngăn không cho văn bản xuống dòng */
+  white-space: nowrap;
+  /* Hiển thị dấu '...' ở cuối */
+  text-overflow: ellipsis;
+}
+\`\`\`
+
+#### **2. Các thuộc tính \`overflow\` cho hộp**
+
+Các thuộc tính này kiểm soát cách nội dung của các phần tử con bị tràn ra khỏi hộp cha.
+
+* \`overflow-x\`: Kiểm soát tràn theo chiều ngang.
+* \`overflow-y\`: Kiểm soát tràn theo chiều dọc.
+* \`overflow\`: Thuộc tính viết tắt cho cả hai.
+
+**Các giá trị của \`overflow\`:**
+
+* **\`visible\` (mặc định)**: Nội dung bị tràn sẽ hiển thị ra bên ngoài hộp chứa.
+* **\`hidden\`**: Nội dung bị tràn sẽ bị **cắt xén** và ẩn đi. Không có thanh cuộn.
+* **\`scroll\`**: **Luôn luôn** hiển thị thanh cuộn, ngay cả khi nội dung không bị tràn. Điều này giúp ngăn chặn sự thay đổi layout (layout shift) đột ngột khi nội dung thay đổi.
+* **\`clip\`**: Tương tự \`hidden\` nhưng hiệu suất cao hơn, nó cũng cấm mọi hình thức cuộn, kể cả cuộn bằng mã lệnh (programmatic scrolling).
+* **\`auto\` (phổ biến nhất)**: Trình duyệt sẽ tự quyết định. Nó chỉ hiển thị thanh cuộn **khi cần thiết**.
+
+**Lưu ý quan trọng**: Khi \`overflow\` có giá trị khác \`visible\`, nó sẽ tạo ra một **ngữ cảnh định dạng khối (block formatting context - BFC)** mới.
+
+#### **Scrolling và Khả năng tiếp cận (Accessibility)**
+
+Một khu vực có thể cuộn phải có thể nhận được focus để người dùng bàn phím có thể điều hướng tới và sử dụng các phím mũi tên để cuộn.
+
+Để làm điều này, hãy thêm các thuộc tính sau vào hộp cuộn của bạn:
+\`tabindex="0"\`, \`role="region"\`, và \`aria-labelledby="id-cua-van-ban-mo-ta"\`.
+
+\`\`\`css
+/* Chỉ bật cuộn và focus khi có đủ các thuộc tính trợ năng */
+[role][aria-labelledby][tabindex] {
+  overflow: auto;
+}
+
+[role][aria-labelledby][tabindex]:focus {
+  outline: .1em solid blue;
+}
+\`\`\`
+
+#### **Các thuộc tính cuộn nâng cao**
+
+* **\`scroll-behavior\`**: Cho phép bạn kích hoạt tính năng cuộn mượt mà do trình duyệt kiểm soát khi điều hướng trong trang (ví dụ, khi click vào một liên kết anchor).
+    * \`scroll-behavior: smooth;\`
+
+* **\`overscroll-behavior\`**: Ngăn chặn "chuỗi cuộn" (scroll chaining) - hiện tượng khi bạn cuộn đến cuối một hộp thoại (modal) và trang nền phía sau bắt đầu cuộn theo.
+    * \`overscroll-behavior: contain;\` sẽ ngăn chặn hành vi này.`;
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        <ul>
-            <li>Layout: Các khái niệm bố cục chung.</li>
-            <li>Flexbox: Bố cục một chiều linh hoạt.</li>
-            <li>Grid: Bố cục hai chiều dạng lưới.</li>
-            <li>Logical Properties: Các thuộc tính logic cho bố cục đa hướng.</li>
-            <li>Spacing: Kiểm soát khoảng cách giữa các phần tử.</li>
-            <li>Z-index and stacking contexts: Quản lý thứ tự xếp chồng của các phần tử.</li>
-            <li>Overflow: Xử lý nội dung tràn ra ngoài hộp chứa.</li>
-        </ul>
-    </ReadLayout>
+  <ReadLayout title="Tài liệu học Astro" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

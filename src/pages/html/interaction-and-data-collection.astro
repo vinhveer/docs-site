@@ -1,33 +1,207 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
+import { Markdown } from "@astropub/md";
+import { links } from "./define-topic.js";  
 
-import { links } from "./define-topic.js";
+const markdownContent = `# Interaction and Data Collection
+
+- Links: Hành vi điều hướng đến trang khác hoặc một phần khác của trang (\`<a>\`).
+- Navigation: Xây dựng các menu điều hướng (thường kết hợp \`<nav>\`, \`<ul>\`, \`<li>\`, \`<a>\`).
+- Forms: Tạo các vùng để người dùng nhập dữ liệu (\`<form>\`, \`<input>\`, \`<button>\`).
+- Focus: Quản lý trạng thái được chọn của một phần tử, cho phép tương tác qua bàn phím.
+- Dialog: Tạo ra một hộp thoại bật lên yêu cầu sự chú ý của người dùng (\`<dialog>\`).
+- Details and summary: Hành vi cho phép người dùng chủ động mở hoặc đóng để xem thêm thông tin (\`<details>\`, \`<summary>\`).
+
+## Liên kết (Links)
+
+Phần này giới thiệu về thẻ \`<a>\` và các thuộc tính liên quan để tạo siêu liên kết, nền tảng của web.
+
+### Thuộc tính \`href\`
+
+Đây là thuộc tính quan trọng nhất, biến một thẻ \`<a>\` thành một liên kết.
+
+- URL tuyệt đối: \`href="https://..."\` - Trỏ đến một trang web cụ thể, có đầy đủ giao thức và tên miền.
+- URL tương đối: \`href="../page.html"\` - Trỏ đến một tài nguyên khác trong cùng website.
+- Link đến một phần của trang (Fragment): \`href="#sectionID"\` - Trỏ đến một phần tử có id tương ứng trên trang hiện tại.
+- Các giao thức đặc biệt:
+  - \`mailto:email@example.com\`: Mở ứng dụng email. Có thể thêm các tham số như \`?subject=...&body=...\` để điền sẵn tiêu đề và nội dung.
+  - \`tel:123456789\`: Mở ứng dụng gọi điện trên thiết bị di động.
+
+### Thuộc tính \`download\`
+
+- **Công dụng:** Khi người dùng nhấp vào liên kết, trình duyệt sẽ tải về tài nguyên thay vì điều hướng đến nó.
+- **Cách dùng:** \`href\` trỏ đến file cần tải, còn giá trị của \`download\` là tên tệp được đề xuất (ví dụ: \`download="baocao.pdf"\`).
+
+### Thuộc tính \`target\`
+
+- **Công dụng:** Xác định nơi mà liên kết sẽ được mở.
+- **Các giá trị chính:**
+  - \`_self\`: (Mặc định) Mở trong chính cửa sổ/tab hiện tại.
+  - \`_blank\`: Mở trong một tab mới.
+- Lưu ý: Có thể đặt một tên cụ thể (ví dụ: \`target="ket-qua"\`) để các lần nhấp chuột tiếp theo vào các liên kết có cùng target sẽ mở trong cùng một tab đó, tránh tạo ra quá nhiều tab mới.
+
+### Thuộc tính \`rel\`
+
+- **Công dụng:** Mô tả mối quan hệ giữa trang hiện tại và trang được liên kết.
+- **Các giá trị phổ biến:**
+  - \`nofollow\`: Yêu cầu công cụ tìm kiếm không đi theo liên kết này.
+  - \`external\`: Đánh dấu liên kết trỏ ra một website bên ngoài.
+  - \`alternate\` (kèm \`hreflang\`): Chỉ định đây là một phiên bản dịch thuật của trang.
+
+### Mẹo về trải nghiệm người dùng **(Rất quan trọng)**
+
+- **Văn bản liên kết phải có ý nghĩa:** Tránh các văn bản chung chung như "nhấp vào đây" hay "xem thêm". Thay vào đó, hãy dùng văn bản mô tả rõ đích đến của liên kết (ví dụ: "Xem báo cáo tài chính quý 4"). Điều này cực kỳ quan trọng cho SEO và người dùng trình đọc màn hình.
+- **Không lồng các phần tử tương tác:** Tránh đặt \`<button>\` hoặc một liên kết khác bên trong một thẻ \`<a>\`.
+- **Phân biệt rõ ràng:** Liên kết phải có giao diện khác biệt với văn bản thường (không chỉ dựa vào màu sắc).
+
+## Điều hướng (Navigation)
+
+Phần này giải thích cách nhóm các liên kết lại với nhau để tạo ra các khối điều hướng có ngữ nghĩa bằng thẻ \`<nav>\`.
+
+### Thẻ \`<nav>\`
+
+- Đây là thẻ ngữ nghĩa dùng để bao bọc một nhóm các liên kết điều hướng chính.
+- **Lưu ý quan trọng:** Nên sử dụng thuộc tính \`aria-label\` hoặc \`aria-labelledby\` để đặt tên cho mỗi khối \`<nav>\` (ví dụ: \`aria-label="Điều hướng chính"\`), giúp người dùng trình đọc màn hình phân biệt các khu vực điều hướng khác nhau trên trang.
+
+### Các loại điều hướng phổ biến
+
+- **Liên kết bỏ qua (Skip Link):** Thường là liên kết đầu tiên trên trang (\`<a href="#main-content">Bỏ qua đến nội dung chính</a>\`), giúp người dùng bàn phím có thể bỏ qua các phần lặp lại (như header, menu) và đi thẳng đến nội dung chính.
+- **Mục lục (Table of Contents):** Danh sách các liên kết trỏ đến các phần khác nhau trong cùng một trang.
+- **Đường dẫn (Breadcrumbs):** Hiển thị vị trí của trang hiện tại trong cấu trúc phân cấp của website (ví dụ: Trang chủ > Sản phẩm > Điện thoại). Nên dùng danh sách có thứ tự (\`<ol>\`) để thể hiện tính tuần tự.
+- **Điều hướng toàn cục (Global Navigation):** Menu chính của trang web, xuất hiện trên mọi trang và chứa các liên kết đến các khu vực quan trọng nhất.
+- **Lưu ý về trang hiện tại:** Đối với liên kết trỏ đến chính trang đang xem, hãy thêm thuộc tính \`aria-current="page"\` để các công nghệ hỗ trợ biết đây là trang hiện tại.
+
+## Biểu mẫu (Forms)
+
+Phần này bao quát cách tạo biểu mẫu tương tác bằng thẻ \`<form>\` và các thẻ con, đặc biệt nhấn mạnh vào khả năng xác thực tích hợp sẵn của HTML mà không cần JavaScript.
+
+### Thẻ \`<form>\` và việc Gửi dữ liệu
+
+- \`<form>\` là vùng chứa cho tất cả các điều khiển của biểu mẫu.
+- **Thuộc tính \`action\`:** URL của máy chủ sẽ xử lý dữ liệu được gửi đi.
+- **Thuộc tính \`method\`:** Phương thức HTTP để gửi dữ liệu.
+  - **GET:** Gửi dữ liệu trên URL. Dùng cho các chức năng không nhạy cảm như tìm kiếm.
+  - **POST:** Gửi dữ liệu trong phần thân của yêu cầu. Bắt buộc dùng cho các thông tin nhạy cảm như mật khẩu, thẻ tín dụng.
+
+### Nhãn và Gom nhóm **(Rất quan trọng cho khả năng truy cập)**
+
+- \`<label>\`: Mọi điều khiển biểu mẫu (\`input\`, \`select\`, \`textarea\`) đều phải có một \`<label>\` đi kèm.
+- **Cách tốt nhất:** Dùng thuộc tính \`for\` trên \`<label>\` trỏ đến \`id\` của điều khiển (\`<label for="ten">Tên</label><input id="ten">\`). Việc này giúp người dùng nhấp vào nhãn cũng có thể focus vào ô nhập liệu.
+- \`<fieldset>\` và \`<legend>\`:
+  - Dùng \`<fieldset>\` để nhóm các điều khiển có liên quan với nhau (ví dụ: một nhóm các nút radio).
+  - Dùng \`<legend>\` để đặt tên/nhãn cho cả nhóm fieldset đó.
+
+### Các loại điều khiển phổ biến
+
+- **Nút radio (\`<input type="radio">\`):** Tất cả các nút trong cùng một nhóm phải có cùng thuộc tính \`name\` để đảm bảo người dùng chỉ chọn được một.
+- **Hộp kiểm (\`<input type="checkbox">\`):** Các hộp kiểm có thể có cùng \`name\` nếu chúng thuộc cùng một danh mục lựa chọn.
+- **Loại đầu vào và bàn phím di động:** Việc chọn \`type\` phù hợp (ví dụ: \`email\`, \`tel\`, \`url\`, \`number\`) sẽ giúp hiển thị bàn phím ảo tối ưu hóa cho việc nhập liệu trên thiết bị di động.
+
+### Xác thực tích hợp (Validation)
+
+HTML5 cung cấp khả năng xác thực dữ liệu phía người dùng mà không cần JavaScript.
+
+- \`required\`: Bắt buộc người dùng phải điền vào trường này.
+- \`pattern\`: Cho phép bạn định nghĩa một biểu thức chính quy (Regular Expression) mà giá trị nhập vào phải tuân theo.
+- \`min\`, \`max\`, \`step\`: Dùng cho các loại input số để giới hạn khoảng giá trị.
+- \`minlength\`, \`maxlength\`: Giới hạn độ dài ký tự cho phép.
+
+**Lưu ý quan trọng:**
+- Xác thực bằng HTML chỉ là một lớp bảo vệ phía người dùng. Nó có thể bị vô hiệu hóa.
+- Bắt buộc phải luôn luôn thực hiện xác thực lại ở phía máy chủ (server-side) để đảm bảo an toàn và toàn vẹn dữ liệu.
+- Sử dụng các lớp giả CSS như \`:valid\`, \`:invalid\`, \`:required\` để cung cấp phản hồi trực quan cho người dùng khi họ điền vào biểu mẫu.
+
+## Quản lý Tập trung (Focus)
+
+Phần này giải thích cách các phần tử trên trang nhận được "tập trung" (focus), thứ tự chúng được điều hướng bằng phím Tab, và cách để thay đổi hành vi mặc định này.
+
+### Thứ tự Tập trung (Tab Order)
+
+- Theo mặc định, thứ tự người dùng di chuyển qua các phần tử tương tác (liên kết, nút, form) bằng phím Tab sẽ tuân theo thứ tự của chúng trong mã nguồn HTML (DOM order).
+- **CẢNH BÁO CỰC KỲ QUAN TRỌNG:** Không bao giờ thay đổi thứ tự hiển thị trực quan của các phần tử bằng CSS (ví dụ: dùng \`flex-direction: row-reverse\` hay thuộc tính \`order\`) mà làm cho nó khác với thứ tự trong mã nguồn. Việc này sẽ gây ra trải nghiệm rất tồi tệ và khó hiểu cho người dùng bàn phím, vì họ sẽ "nhảy" focus một cách phi logic.
+
+### Các thuộc tính quan trọng để quản lý Focus
+
+- **Thuộc tính \`tabindex\`:**
+  - \`tabindex="0"\`: Làm cho một phần tử vốn không tương tác (như \`<div>\`, \`<span>\`) có thể nhận focus và được thêm vào thứ tự Tab tự nhiên của trang. Rất hữu ích khi tạo các component tùy chỉnh.
+  - \`tabindex="-1"\`: Làm cho một phần tử có thể nhận focus thông qua mã JavaScript (\`element.focus()\`) nhưng loại bỏ nó khỏi thứ tự điều hướng bằng phím Tab. Hữu ích cho các phần tử cần được focus theo kịch bản nhưng không muốn người dùng Tab đến, ví dụ như một hộp thoại đang ẩn.
+  - \`tabindex > 0\` (ví dụ \`tabindex="1"\`, \`tabindex="2"\`): **KHÔNG NÊN SỬ DỤNG**. Nó tạo ra một thứ tự focus ưu tiên riêng, phá vỡ luồng tự nhiên của trang và rất khó quản lý, gây trải nghiệm tồi.
+
+- **Thuộc tính \`contenteditable\`:** Khi đặt \`contenteditable="true"\` trên một phần tử, nó sẽ trở nên có thể chỉnh sửa và cũng có thể nhận focus, tương tự như \`tabindex="0"\`.
+
+- **Thuộc tính \`autofocus\`:** Tự động đặt focus vào một phần tử ngay khi trang tải xong.  
+  **Lưu ý quan trọng:** Nên tránh sử dụng \`autofocus\` trong hầu hết các trường hợp vì nó có thể làm người dùng (đặc biệt là người dùng trình đọc màn hình) mất phương hướng do trang bị cuộn bất ngờ.  
+  *Ngoại lệ:* Có thể sử dụng \`autofocus\` một cách hợp lý bên trong phần tử \`<dialog>\` để hướng người dùng vào một hành động cụ thể (như nút "Đóng") ngay khi hộp thoại mở ra.
+
+### Làm cho phần tử tương tác trở nên "Trơ" (Không thể tương tác)
+
+- \`tabindex="-1"\`: Loại bỏ khỏi thứ tự Tab nhưng vẫn có thể focus bằng chuột hoặc script.
+- **Thuộc tính \`disabled\`:** Dành cho các điều khiển biểu mẫu (\`<button>\`, \`<input>\`, \`<fieldset>\`). Phần tử sẽ bị mờ đi, không thể nhấp, không thể focus và không được gửi đi cùng biểu mẫu. Đây là cách chuẩn để vô hiệu hóa một control.
+- **Thuộc tính \`inert\`:** Một thuộc tính chung. Khi áp dụng cho một container, tất cả mọi thứ bên trong nó (bao gồm cả các phần tử con) sẽ hoàn toàn bị vô hiệu hóa: không thể nhấp, không thể focus và bị loại bỏ khỏi cây hỗ trợ tiếp cận. Rất hữu ích để vô hiệu hóa phần nội dung chính của trang khi một hộp thoại modal đang mở.
+
+## Hộp thoại (Dialog)
+
+HTML cung cấp phần tử \`<dialog>\` để tạo các hộp thoại (pop-up) một cách có ngữ nghĩa và dễ dàng truy cập.
+
+### Các loại Hộp thoại
+
+- **Hộp thoại Modal (Chặn tương tác):**
+  - Mở bằng JavaScript: \`dialog.showModal()\`.
+  - Khi mở, nó sẽ làm cho toàn bộ phần còn lại của trang trở nên "trơ" (\`inert\`). Người dùng bắt buộc phải tương tác với hộp thoại.
+  - Focus của người dùng bị "bẫy" bên trong hộp thoại.
+  - Có thể đóng bằng phím Esc.
+  - Có một lớp nền (\`::backdrop\`) có thể được tạo kiểu bằng CSS.
+
+- **Hộp thoại Non-modal (Không chặn tương tác):**
+  - Mở bằng JavaScript: \`dialog.show()\`.
+  - Khi mở, người dùng vẫn có thể tương tác với phần còn lại của trang.
+  - Không thể đóng bằng phím Esc, vì vậy bắt buộc phải có nút đóng rõ ràng.
+
+### Đóng Hộp thoại (Không cần JavaScript)
+
+- **Cách làm:** Đặt một \`<form method="dialog">\` bên trong \`<dialog>\`. Bất kỳ nút \`type="submit"\` nào trong form đó sẽ có chức năng đóng hộp thoại mà không cần gửi dữ liệu.  
+  Đây là một cách rất mạnh mẽ và tiện lợi để xử lý hành động đóng.
+
+### Lưu ý quan trọng về Hộp thoại
+
+- **Luôn có nút đóng rõ ràng:** Ngay cả với hộp thoại modal, việc có một nút đóng là rất quan trọng cho trải nghiệm người dùng.
+- **Focus:** Khi hộp thoại mở, focus sẽ tự động chuyển đến phần tử tương tác đầu tiên bên trong nó (hoặc phần tử có thuộc tính \`autofocus\`). Khi hộp thoại đóng, focus sẽ trả về phần tử đã kích hoạt mở nó.
+- **Khả năng truy cập (Accessibility):** Vai trò ARIA mặc định là \`dialog\`. Nếu hộp thoại dùng để cảnh báo quan trọng, hãy dùng \`role="alertdialog"\`. Luôn đảm bảo hộp thoại có một nhãn truy cập rõ ràng (ví dụ, qua \`aria-labelledby\`).
+
+## Chi tiết và Tóm tắt (Details & Summary)
+
+Đây là cách gốc của HTML để tạo các tiện ích có thể mở/đóng (disclosure widget) như trong các mục Hỏi-Đáp (FAQ) mà không cần JavaScript.
+
+### Cách hoạt động
+
+- \`<details>\`: Là thẻ chứa toàn bộ tiện ích.
+- \`<summary>\`: Là phần luôn luôn hiển thị, hoạt động như một cái nút để bật/tắt nội dung. Nó phải là con trực tiếp đầu tiên của \`<details>\`.
+- Khi người dùng nhấp vào \`<summary>\`, trình duyệt sẽ tự động thêm hoặc xóa thuộc tính \`open\` khỏi thẻ \`<details>\`.
+
+### Thuộc tính \`open\`
+
+- Đây là một thuộc tính boolean.
+- Nếu có thuộc tính \`open\`, nội dung bên trong \`<details>\` (ngoài phần \`<summary>\`) sẽ được hiển thị.
+- Nếu không có, nội dung sẽ bị ẩn.
+- Bạn có thể dùng CSS để tạo kiểu dựa trên sự có mặt của thuộc tính này (ví dụ: \`details[open] { ... }\`).
+
+### Tùy chỉnh giao diện
+
+- Biểu tượng hình tam giác mặc định có thể được tạo kiểu hoặc thay thế bằng cách sử dụng pseudo-element \`::marker\` hoặc \`::before\` trên thẻ \`<summary>\`.
+- Bạn có thể tạo ra một hiệu ứng đàn xếp (accordion) bằng cách đặt nhiều cặp \`<details>\`/\`<summary>\` nối tiếp nhau.
+
+### Lưu ý quan trọng
+
+- **Luôn phải có \`<summary>\`:** Nếu không, trình duyệt sẽ tự tạo ra một tóm tắt mặc định ("Details") và có thể hoạt động không nhất quán.
+- **Tránh đặt các phần tử tương tác khác (như link, button) bên trong \`<summary>\`:** vì hành vi của trình duyệt có thể không đồng nhất và gây khó hiểu cho người dùng.
+`;
 ---
+
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-
-        <ul class="list-disc pl-6">
-            <li>
-            Links: Hành vi điều hướng đến trang khác hoặc một phần khác của trang (<code>&lt;a&gt;</code>).
-            </li>
-            <li>
-            Navigation: Xây dựng các menu điều hướng (thường kết hợp <code>&lt;nav&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;a&gt;</code>).
-            </li>
-            <li>
-            Forms: Tạo các vùng để người dùng nhập dữ liệu (<code>&lt;form&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;button&gt;</code>).
-            </li>
-            <li>
-            Focus: Quản lý trạng thái được chọn của một phần tử, cho phép tương tác qua bàn phím.
-            </li>
-            <li>
-            Dialog: Tạo ra một hộp thoại bật lên yêu cầu sự chú ý của người dùng (<code>&lt;dialog&gt;</code>).
-            </li>
-            <li>
-            Details and summary: Hành vi cho phép người dùng chủ động mở hoặc đóng để xem thêm thông tin (<code>&lt;details&gt;</code>, <code>&lt;summary&gt;</code>).
-            </li>
-        </ul>
-
-    </ReadLayout>
+  <ReadLayout title="Tương tác và Thu thập Dữ liệu" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

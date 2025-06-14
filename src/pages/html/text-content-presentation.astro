@@ -1,17 +1,92 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
----
-<Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
+
+const markdownContent = `# Text Content Presentation
         
-        <ul class="list-disc pl-6">
-            <li>Text basics: Các thẻ cơ bản như <code>&lt;p&gt;</code>, <code>&lt;span&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>.</li>
-            <li>Lists: Hiển thị danh sách (<code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, <code>&lt;li&gt;</code>).</li>
-            <li>Other inline text elements: Các thẻ văn bản nội tuyến khác (<code>&lt;code&gt;</code>, <code>&lt;sub&gt;</code>, <code>&lt;sup&gt;</code>).</li>
-        </ul>
-    </ReadLayout>
+- Text basics: Các thẻ cơ bản như \`<p>\`, \`<span>\`, \`<strong>\`, \`<em>\`.
+- Lists: Hiển thị danh sách (\`<ul>\`, \`<ol>\`, \`<li>\`).
+- Other inline text elements: Các thẻ văn bản nội tuyến khác (\`<code>\`, \`<sub>\`, \`<sup>\`).
+
+## Tiêu đề (\`<h1>\` - \`<h6>\`)
+
+- **Công dụng:** Dùng để tạo cấu trúc dàn ý cho tài liệu. \`<h1>\` là cấp cao nhất, \`<h6>\` là thấp nhất.
+- **Lưu ý quan trọng:**
+  - Hãy sử dụng các cấp tiêu đề một cách tuần tự (không nhảy từ \`<h1>\` xuống \`<h3>\`) để tạo một cấu trúc logic.
+  - Việc này cực kỳ quan trọng cho người dùng trình đọc màn hình (screen reader) để họ có thể hiểu và điều hướng trang web.
+  - Tuyệt đối không sử dụng thẻ tiêu đề chỉ để làm cho chữ to hơn hoặc nhỏ hơn. Việc định dạng là của CSS.
+
+## Trích dẫn (Blockquotes & Citations)
+
+- \`<blockquote>\`: Dùng cho các đoạn trích dẫn dài, ở cấp độ khối (block).
+- \`<q>\`: Dùng cho các trích dẫn ngắn, nằm trong dòng (inline).
+  > **Lưu ý:** Thẻ \`<q>\` sẽ tự động thêm cặp dấu ngoặc kép phù hợp với ngôn ngữ được khai báo (ví dụ \`lang="fr"\` sẽ cho ra dấu « »).
+- \`<cite>\`: Dùng để đánh dấu tên của một tác phẩm (sách, bài báo, website...), **không phải tên tác giả**.
+- Thuộc tính \`cite\`: Là một URL trỏ đến nguồn của trích dẫn, dùng cho cả \`<blockquote>\` và \`<q>\`. Thuộc tính này không hiển thị nhưng hữu ích cho máy đọc.
+
+## Thực thể HTML (HTML Entities)
+
+- Công dụng: Dùng để hiển thị các ký tự có ý nghĩa đặc biệt trong HTML.
+- Các thực thể quan trọng:
+  - \`&lt;\` để hiển thị dấu <
+  - \`&gt;\` để hiển thị dấu >
+  - \`&amp;\` để hiển thị dấu &
+  - \`&quot;\` để hiển thị dấu "
+- **Lưu ý quan trọng:** Khi đã khai báo \`<meta charset="UTF-8">\`, bạn không cần phải mã hóa hầu hết các ký tự đặc biệt (kể cả biểu tượng cảm xúc), nhưng luôn phải dùng \`&lt;\` nếu muốn hiển thị ký tự < trên trang.
+
+## Danh sách (Lists)
+
+HTML cung cấp 3 loại danh sách chính:
+
+- **Danh sách không theo thứ tự (\`<ul>\`):** Dùng cho các mục mà thứ tự không quan trọng. Các mục con là \`<li>\`.
+- **Danh sách có thứ tự (\`<ol>\`):** Dùng cho các mục mà thứ tự là quan trọng (ví dụ: các bước hướng dẫn). Các mục con là \`<li>\`.
+  - Có các thuộc tính như \`type\` (để chọn kiểu đánh số: 1, a, A, i, I), \`reversed\` (đảo ngược thứ tự), \`start\` (bắt đầu từ một số cụ thể).
+- **Danh sách mô tả (\`<dl>\`):** Dùng cho các cặp thuật ngữ và định nghĩa (hoặc khóa - giá trị). Bao gồm các thẻ:
+  - \`<dt>\` (Description Term): Thuật ngữ cần định nghĩa.
+  - \`<dd>\` (Description Details): Mô tả cho thuật ngữ đó.
+- **Lưu ý quan trọng:**
+  - Phần tử con trực tiếp duy nhất của \`<ul>\` và \`<ol>\` phải là \`<li>\`.
+  - Khi lồng các danh sách vào nhau, danh sách con phải được đặt bên trong một thẻ \`<li>\`, không được đặt trực tiếp trong \`<ul>\` hay \`<ol>\`.
+
+## Các thành phần văn bản cùng dòng khác
+
+Đây là các thẻ dùng để tạo ngữ nghĩa cho những từ hoặc cụm từ cụ thể.
+
+- **Nhấn mạnh & Tầm quan trọng**
+  - \`<em>\`: Nhấn mạnh (emphasis). Trình đọc màn hình thường sẽ đọc với ngữ điệu nhấn mạnh.
+  - \`<strong>\`: Thể hiện tầm quan trọng (strong importance).
+  - \`<mark>\`: Dùng để đánh dấu, làm nổi bật văn bản cho mục đích tham khảo (ví dụ: tô vàng từ khóa tìm kiếm).
+
+- **Kỹ thuật & Mã nguồn**
+  - \`<code>\`: Dành cho một đoạn mã nguồn.
+  - \`<pre>\`: Giữ nguyên các định dạng khoảng trắng, xuống dòng, thường dùng để bao bọc một khối \`<code>\` nhiều dòng.
+  - \`<kbd>\`: Đại diện cho nội dung nhập từ bàn phím (ví dụ: "Nhấn \`<kbd>Ctrl</kbd> + <kbd>S</kbd>\`").
+
+- **Định nghĩa & Ngôn ngữ**
+  - \`<dfn>\`: Đánh dấu lần đầu tiên một thuật ngữ được định nghĩa.
+  - \`<abbr>\`: Dành cho các từ viết tắt. Nên cung cấp dạng đầy đủ trong lần sử dụng đầu tiên.
+  - \`<ruby>\`, \`<rt>\`, \`<rp>\`: Dùng để hiển thị các chú thích phiên âm, thường dùng cho các ngôn ngữ Đông Á.
+
+- **Các thẻ mang tính trình bày (Sử dụng cẩn thận)**
+  > **Lưu ý quan trọng:** Các thẻ \`<b>\`, \`<i>\`, \`<u>\` đã được định nghĩa lại với ngữ nghĩa cụ thể hơn, nhưng chỉ nên dùng khi không có thẻ nào khác phù hợp hơn. Luôn ưu tiên dùng CSS để tạo kiểu.
+  - \`<i>\`: Dùng cho thuật ngữ kỹ thuật, từ ngoại lai, suy nghĩ... không đơn thuần là để in nghiêng.
+  - \`<b>\`: Dùng để gây chú ý mà không ngụ ý tầm quan trọng, không đơn thuần là để in đậm.
+  - \`<u>\`: Dùng cho các chú thích phi văn bản, ví dụ như gạch chân một từ viết sai chính tả có chủ đích.
+
+## Khoảng trắng và Ngắt dòng
+
+- \`<br>\`: Tạo một lần ngắt dòng (xuống dòng).
+  > **Lưu ý:** Chỉ dùng cho các trường hợp cần ngắt dòng thực sự như trong thơ hoặc địa chỉ. Không dùng \`<br>\` để tạo khoảng cách giữa các đoạn văn (hãy dùng thẻ \`<p>\`).
+- \`<hr>\`: Tạo ra một sự phân cách theo chủ đề (thematic break), ví dụ như giữa các chương trong truyện. Nó có ý nghĩa ngữ nghĩa, không chỉ là một đường kẻ ngang.
+- \`<wbr>\`: (Word Break Opportunity) Gợi ý cho trình duyệt một vị trí có thể ngắt dòng trong một từ dài nếu cần, để tránh làm vỡ layout.`;
+---
+
+<Layout>
+  <ReadLayout title="Tài liệu học Astro" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

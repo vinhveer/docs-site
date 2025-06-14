@@ -1,19 +1,93 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Structuring & Semantics
+        
+- Document structure: Các thẻ nền tảng như \`<html>\`, \`<head>\`, \`<body>\`.
+- Metadata: Cung cấp thông tin về trang (ví dụ: \`<meta>\`, \`<title>\`).
+- Semantic HTML: Các thẻ định nghĩa ý nghĩa (\`<article>\`, \`<section>\`, \`<nav>\`).
+- Headings and sections: Phân cấp và tổ chức nội dung (\`<h1>\`-\`<h6>\`, \`<section>\`).
+
+## Cấu trúc tài liệu (Document Structure)
+
+Đây là nền tảng của mọi trang web. Một cấu trúc chuẩn bao gồm các thành phần thiết yếu.
+
+- \`<!DOCTYPE html>\`: Luôn là dòng đầu tiên của tài liệu. Nó chỉ định rằng trang đang sử dụng các tiêu chuẩn HTML5 mới nhất. Bắt buộc phải có để tránh trình duyệt chuyển sang "quirks mode" (chế độ hiển thị cũ và không nhất quán).
+
+- \`<html>\`: Thẻ gốc của toàn bộ tài liệu. Nên khai báo thuộc tính \`lang\` (ngôn ngữ) ngay trên thẻ này (ví dụ: \`<html lang="vi">\`). Điều này rất quan trọng cho các công cụ tìm kiếm, trình đọc màn hình và dịch vụ dịch thuật.
+
+- \`<head>\`: Chứa tất cả các "siêu dữ liệu" (metadata) không hiển thị trực tiếp trên trang nhưng rất quan trọng cho hoạt động của trang web.
+
+- \`<body>\`: Chứa toàn bộ nội dung sẽ hiển thị cho người dùng.
+
+### Các thành phần bắt buộc trong \`<head>\`
+
+- Khai báo bộ ký tự (Character Encoding): \`<meta charset="utf-8" />\`. Đây phải là thẻ đầu tiên bên trong \`<head>\`. Nó đảm bảo trình duyệt hiển thị chính xác tất cả các ký tự, bao gồm cả tiếng Việt và các biểu tượng cảm xúc. UTF-8 là tiêu chuẩn cho HTML5.
+
+- Tiêu đề tài liệu (Document Title): \`<title>...</title>\`. Mỗi trang phải có một tiêu đề duy nhất và mang tính mô tả. Tiêu đề này xuất hiện trên tab trình duyệt, lịch sử, kết quả tìm kiếm và khi chia sẻ liên kết.
+
+- Metadata Viewport: \`<meta name="viewport" content="width=device-width, initial-scale=1" />\`. Cực kỳ cần thiết cho thiết kế đáp ứng (responsive design), giúp trang web hiển thị tốt trên mọi kích thước màn hình, đặc biệt là di động.
+
+### Các thành phần khác trong \`<head>\`
+
+- CSS: Nhúng CSS bằng thẻ \`<link rel="stylesheet" href="...">\` là cách tốt nhất. Nên đặt các thẻ CSS trong \`<head>\` để trình duyệt biết cách hiển thị nội dung ngay khi tải, tránh hiện tượng trang bị "vỡ" rồi mới định dạng lại (repaint).
+
+- Favicon: Sử dụng \`<link rel="icon" ...>\` để định nghĩa icon nhỏ trên tab trình duyệt.
+
+- URL chuẩn (Canonical URL): \`<link rel="canonical" href="..." />\`. Rất quan trọng cho SEO. Nó cho công cụ tìm kiếm biết đâu là URL "chính chủ" nếu nội dung của bạn xuất hiện trên nhiều liên kết khác nhau, giúp tránh lỗi trùng lặp nội dung.
+
+- Scripts (\`<script>\`): Thường được đặt ở cuối thẻ \`<body>\` (thay vì trong \`<head>\`) để không làm chậm quá trình tải và hiển thị nội dung của trang. Sử dụng thuộc tính \`defer\` hoặc \`async\` để tối ưu hiệu suất.
+
+## Siêu dữ liệu (Metadata)
+
+Phần này đi sâu hơn về thẻ \`<meta>\`.
+
+- Thẻ Meta description: \`<meta name="description" content="..." />\`. Cực kỳ hữu ích cho SEO. Nội dung trong thẻ này thường được các công cụ tìm kiếm hiển thị ngay bên dưới tiêu đề trang trong kết quả tìm kiếm.
+
+- Thẻ Meta keywords: Tài liệu ghi chú rằng thẻ này đã bị lạm dụng và hiện nay không còn giá trị với các công cụ tìm kiếm.
+
+- Open Graph (og) và Twitter Cards: Đây là các thẻ \`<meta>\` đặc biệt (ví dụ: \`og:title\`, \`og:image\`, \`twitter:card\`) giúp bạn kiểm soát cách liên kết của mình hiển thị khi được chia sẻ trên mạng xã hội như Facebook, Twitter, LinkedIn. Sử dụng các thẻ này để tạo ra các bản xem trước (preview) hấp dẫn với hình ảnh, tiêu đề và mô tả tùy chỉnh, giúp tăng tỷ lệ nhấp chuột.
+
+## HTML Ngữ nghĩa (Semantic HTML)
+
+Đây là một trong những khái niệm quan trọng nhất.
+
+- **Ý nghĩa:** Sử dụng các thẻ HTML dựa trên ý nghĩa của nội dung mà chúng chứa, chứ không phải dựa trên vẻ ngoài của chúng.
+  > **Ví dụ:** Dùng \`<nav>\` cho thanh điều hướng, \`<h1>\` cho tiêu đề chính, \`<p>\` cho một đoạn văn, thay vì dùng \`<div>\` cho tất cả mọi thứ.
+
+- **Tại sao lại quan trọng?**
+  - **Khả năng truy cập (Accessibility):** Trình đọc màn hình có thể hiểu cấu trúc trang và giúp người dùng khiếm thị điều hướng dễ dàng hơn (ví dụ: "chuyển đến thanh điều hướng chính").
+  - **SEO:** Công cụ tìm kiếm hiểu rõ hơn về nội dung của từng phần trên trang của bạn.
+  - **Dễ bảo trì:** Mã nguồn rõ ràng, dễ đọc hơn cho chính bạn và các lập trình viên khác.
+
+- **Thuộc tính role:** Bạn có thể dùng \`role\` để thêm ngữ nghĩa (ví dụ \`<div role="button">\`), nhưng... Luôn ưu tiên sử dụng thẻ HTML có sẵn với ngữ nghĩa tương ứng (\`<button>\`) thay vì thêm role vào một thẻ chung chung (\`<div>\`). Thẻ gốc đã có sẵn các hành vi và tính năng truy cập mà bạn không cần phải lập trình lại.
+
+## Tiêu đề và Phân mục (Headings and Sections)
+
+Phần này hướng dẫn cách cấu trúc nội dung chính của trang bằng các thẻ ngữ nghĩa.
+
+- **Các thẻ cấu trúc trang chính:**
+  - \`<main>\`: Chứa nội dung chính và duy nhất của trang. Mỗi trang chỉ nên có một thẻ \`<main>\`.
+  - \`<header>\`: Phần đầu trang (banner, logo, tiêu đề trang).
+  - \`<footer>\`: Phần chân trang (bản quyền, thông tin liên hệ).
+  - \`<nav>\`: Chứa các liên kết điều hướng chính.
+  - \`<article>\`: Dành cho nội dung độc lập, có thể tự tồn tại như một bài blog, một tin tức.
+  - \`<section>\`: Dùng để nhóm các nội dung có cùng chủ đề. Hầu hết các \`<section>\` nên có một tiêu đề.
+  - \`<aside>\`: Dành cho nội dung phụ, liên quan một cách gián tiếp (ví dụ: các liên kết liên quan, quảng cáo).
+
+- **Các thẻ tiêu đề (\`<h1>\` - \`<h6>\`):**
+  Chúng tạo ra một hệ thống phân cấp, một dàn ý cho nội dung của bạn.
+  - Hãy bắt đầu bằng \`<h1>\` cho tiêu đề quan trọng nhất của trang và không được bỏ qua các cấp độ (ví dụ: không đi từ \`<h2>\` xuống \`<h4>\`).
+  - Tuyệt đối không dùng thẻ tiêu đề chỉ để làm cho chữ to hơn hoặc đậm hơn. Việc định dạng giao diện là của CSS.`;
 ---
+
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-        <ul class="list-disc pl-6">
-            <li>Document structure: Các thẻ nền tảng như <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code>.</li>
-            <li>Metadata: Cung cấp thông tin về trang (ví dụ: <code>&lt;meta&gt;</code>, <code>&lt;title&gt;</code>).</li>
-            <li>Semantic HTML: Các thẻ định nghĩa ý nghĩa (<code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;nav&gt;</code>).</li>
-            <li>Headings and sections: Phân cấp và tổ chức nội dung (<code>&lt;h1&gt;-&lt;h6&gt;</code>, <code>&lt;section&gt;</code>).</li>
-        </ul>
-        
-    </ReadLayout>
+  <ReadLayout title="Tài liệu học Astro" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

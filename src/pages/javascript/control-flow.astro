@@ -1,13 +1,119 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Luồng Điều Khiển và Toán Tử
+
+## Phần 1: Biến và Kiểu dữ liệu (Variables & Data Types)
+
+### Biến (Variables)
+
+Biến là các "hộp chứa" được đặt tên để lưu trữ dữ liệu.
+* **Khai báo**: Dùng các từ khóa \`let\`, \`const\`, và \`var\`.
+    * \`let\`: Khai báo một biến có thể thay đổi giá trị, có phạm vi khối (block scope). Đây là lựa chọn tiêu chuẩn hiện nay.
+    * \`const\`: Khai báo một hằng số, giá trị không thể gán lại sau khi khởi tạo. Nó cũng có phạm vi khối. **Lưu ý**: Nếu \`const\` chứa một đối tượng (object), bạn vẫn có thể thay đổi các thuộc tính của đối tượng đó.
+    * \`var\`: Cách khai báo cũ, có phạm vi hàm (function scope) và hành vi hoisting khác biệt. **Nên tránh sử dụng trong code hiện đại.**
+* **Phạm vi (Scope)**: Là nơi mà một biến có thể được truy cập. Gồm có: phạm vi khối (\`{}\`), phạm vi hàm, và phạm vi toàn cục.
+* **Hoisting**: Là hành vi mặc định của JavaScript di chuyển các khai báo lên đầu phạm vi của chúng trước khi thực thi code. \`var\` được hoisting và khởi tạo với giá trị \`undefined\`, trong khi \`let\` và \`const\` được hoisting nhưng nằm trong "Vùng chết thời gian" (TDZ) và không thể truy cập trước khi được khai báo.
+
+### Các kiểu dữ liệu nguyên thủy (Primitives)
+
+JavaScript có 7 kiểu dữ liệu nguyên thủy. Chúng là **bất biến (immutable)**.
+
+1.  **Number (Số)**: Kiểu số duy nhất là số thực dấu phẩy động 64-bit.
+    * Bao gồm cả số nguyên và số thực.
+    * Có thể gặp lỗi làm tròn nhỏ (ví dụ: \`0.1 + 0.2\` không hoàn toàn bằng \`0.3\`).
+    * Các giá trị đặc biệt: \`Infinity\` (vô cực) và \`NaN\` (Not a Number - không phải là số).
+
+2.  **String (Chuỗi)**: Một chuỗi các ký tự, được đặt trong dấu nháy đơn (\`'\`), kép (\`"\`) hoặc dấu huyền (\` \` \`).
+    * **Template Literals** (dùng dấu huyền): Cho phép viết chuỗi trên nhiều dòng và nội suy chuỗi bằng \`\${...}\`.
+
+3.  **Boolean (Luận lý)**: Chỉ có hai giá trị: \`true\` (đúng) và \`false\` (sai).
+    * Các giá trị được coi là **falsy**: \`false\`, \`0\`, \`""\`, \`null\`, \`undefined\`, \`NaN\`.
+    * Tất cả các giá trị khác được coi là **truthy**.
+
+4.  **\`null\`**: Đại diện cho sự vắng mặt của giá trị một cách **cố ý**. Nó là một giá trị được gán để biểu thị "trống rỗng".
+
+5.  **\`undefined\`**: Đại diện cho sự thiếu vắng giá trị. Một biến đã được khai báo nhưng **chưa được gán giá trị** sẽ có giá trị mặc định là \`undefined\`.
+
+6.  **BigInt**: Dùng để biểu diễn các số nguyên cực lớn, vượt quá giới hạn của kiểu \`Number\`. Được tạo bằng cách thêm \`n\` vào cuối số.
+
+7.  **Symbol**: Tạo ra một giá trị **duy nhất và không thể xung đột**. Hữu ích để tạo các khóa thuộc tính duy nhất cho đối tượng.
+
+## Phần 2: Các toán tử (Operators)
+
+### Toán tử so sánh (Comparison Operators)
+
+* **\`==\` (So sánh lỏng)**: So sánh hai giá trị sau khi đã **ép kiểu (type coercion)** chúng về cùng một loại. Ví dụ, \`2 == "2"\` là \`true\`.
+* **\`===\` (So sánh nghiêm ngặt)**: So sánh cả giá trị và kiểu dữ liệu mà **không ép kiểu**. \`2 === "2"\` là \`false\`.
+* **Lưu ý quan trọng**: Luôn ưu tiên sử dụng \`===\` để tránh các lỗi không mong muốn do ép kiểu tự động.
+* Các toán tử khác: \`!=\`, \`!==\`, \`>\`, \`<\`, \`>=\`, \`<=\`.
+
+### Toán tử logic (Logical Operators)
+
+Dùng để kết hợp các điều kiện.
+
+* **\`&&\` (VÀ logic)**: Trả về \`true\` nếu cả hai toán hạng đều là \`true\`. Nó trả về giá trị của toán hạng đầu tiên nếu nó là falsy, ngược lại trả về giá trị của toán hạng thứ hai.
+* **\`||\` (HOẶC logic)**: Trả về \`true\` nếu ít nhất một trong hai toán hạng là \`true\`. Nó trả về giá trị của toán hạng đầu tiên nếu nó là truthy, ngược lại trả về giá trị của toán hạng thứ hai.
+* **\`!\` (PHỦ ĐỊNH logic)**: Đảo ngược giá trị boolean (\`!true\` là \`false\`).
+
+### Toán tử Nullish Coalescing (\`??\`)
+
+Một toán tử mới (ES2020), nó trả về toán hạng bên phải chỉ khi toán hạng bên trái là \`null\` hoặc \`undefined\`. Nó chặt chẽ hơn \`||\` vì nó không bị ảnh hưởng bởi các giá trị falsy khác như \`0\` hay \`""\`.
+
+\`\`\`javascript
+let height = 0;
+console.log(height || 100); // 100 (vì 0 là falsy)
+console.log(height ?? 100); // 0 (vì 0 không phải null hay undefined)
+\`\`\`
+
+## Phần 3: Luồng điều khiển (Control Flow)
+
+### Câu lệnh điều kiện
+
+* **\`if...else\`**: Thực thi một khối mã nếu một điều kiện là \`true\`, và một khối mã khác nếu nó là \`false\`.
+* **Toán tử ba ngôi (Ternary Operator)**: Một cách viết tắt cho \`if...else\`.
+    \`condition ? expressionIfTrue : expressionIfFalse;\`
+* **\`switch\`**: So sánh một biểu thức với một danh sách các giá trị (\`case\`). Cần sử dụng \`break\` để ngăn chặn hành vi "fall-through" (thực thi cả các \`case\` phía dưới).
+
+### Vòng lặp (Loops)
+
+* **\`while\`**: Lặp lại một khối mã miễn là điều kiện còn \`true\`.
+* **\`do...while\`**: Tương tự \`while\`, nhưng luôn thực thi khối mã ít nhất một lần trước khi kiểm tra điều kiện.
+* **\`for\`**: Vòng lặp cổ điển với bộ đếm, điều kiện và biểu thức cuối mỗi vòng lặp.
+* **\`for...of\`**: Dùng để lặp qua các **giá trị** của các cấu trúc dữ liệu có thể lặp (iterable) như Array, Set, Map.
+* **\`for...in\`**: Dùng để lặp qua các **khóa (keys)** của các thuộc tính trong một đối tượng (object).
+* **\`forEach()\`**: Một phương thức của Array, Map, Set để thực thi một hàm callback cho mỗi phần tử.
+
+## Phần 4: JavaScript Bất đồng bộ (Asynchronous JavaScript)
+
+JavaScript về cơ bản là đơn luồng nhưng có thể xử lý các tác vụ bất đồng bộ nhờ vào Event Loop.
+
+### Promise
+
+Promise là một đối tượng đại diện cho việc hoàn thành (hoặc thất bại) của một tác vụ bất đồng bộ trong tương lai. Một Promise có 3 trạng thái:
+* \`pending\`: Chờ xử lý.
+* \`fulfilled\`: Tác vụ hoàn thành thành công.
+* \`rejected\`: TácVụ thất bại.
+
+Bạn có thể xử lý kết quả của một Promise bằng các phương thức \`.then()\` (cho trường hợp thành công), \`.catch()\` (cho trường hợp thất bại), và \`.finally()\` (luôn chạy sau khi Promise kết thúc).
+
+### \`async/await\`
+
+Đây là một "cú pháp ngọt ngào" (syntactic sugar) giúp làm việc với Promise một cách dễ dàng và dễ đọc hơn, khiến cho code bất đồng bộ trông giống như code đồng bộ.
+
+* **\`async\`**: Đặt trước một hàm để báo hiệu rằng hàm đó luôn trả về một Promise.
+* **\`await\`**: Chỉ có thể được sử dụng bên trong một hàm \`async\`. Nó sẽ "tạm dừng" việc thực thi hàm cho đến khi Promise được giải quyết (fulfilled hoặc rejected) và trả về kết quả của Promise đó.
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-    </ReadLayout>
+  <ReadLayout title="Luồng Điều Khiển và Toán Tử" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

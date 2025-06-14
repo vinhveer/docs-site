@@ -1,0 +1,249 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ReadLayout from "../../layouts/ReadLayout.astro";
+import { Markdown } from "@astropub/md";
+import { links } from "./define-topic.js";
+
+const markdownContent = `# Khái niệm cơ bản và cú pháp cơ bản
+
+- Selectors: Cách nhắm mục tiêu các phần tử HTML.
+- The cascade: Thứ tự ưu tiên của các quy tắc CSS.
+- Specificity: Cách trình duyệt quyết định quy tắc nào phù hợp nhất.
+- Inheritance: Cách các thuộc tính được truyền từ phần tử mẹ sang phần tử con.
+- Functions: Các hàm có sẵn trong CSS (ví dụ: calc(), rgb()).
+
+## Bộ chọn (Selectors)
+
+Bộ chọn CSS là các quy tắc bạn sử dụng để "tìm" và áp dụng style cho các phần tử HTML cụ thể.
+
+### Các loại bộ chọn đơn giản
+
+* **Bộ chọn Universal (\`*\`)**: Chọn TẤT CẢ các phần tử trên trang.
+    * Ví dụ: \`* { color: hotpink; }\` sẽ làm cho mọi văn bản trên trang có màu hồng.
+* **Bộ chọn theo Loại (Type Selector)**: Chọn trực tiếp các phần tử HTML dựa trên tên thẻ của chúng.
+    * Ví dụ: \`section { padding: 2em; }\` sẽ áp dụng padding cho mọi thẻ \`<section>\`.
+* **Bộ chọn theo Lớp (Class Selector)**: Chọn các phần tử có thuộc tính \`class\` tương ứng. Ký hiệu bằng dấu chấm (\`.\`).
+    * Ví dụ: \`.my-class { color: red; }\`
+    * **Lưu ý quan trọng**:
+        * Một phần tử có thể có nhiều lớp, và bộ chọn lớp sẽ khớp miễn là phần tử đó *chứa* lớp được chỉ định.
+        * Tên lớp (và ID) không được bắt đầu bằng một con số.
+* **Bộ chọn theo ID (ID Selector)**: Chọn một phần tử duy nhất dựa trên thuộc tính \`id\` của nó. Ký hiệu bằng dấu thăng (\`#\`).
+    * Ví dụ: \`#rad { border: 1px solid blue; }\`
+    * **Lưu ý quan trọng**:
+        * Mỗi \`id\` phải là **duy nhất** trên một trang.
+        * Tránh sử dụng bộ chọn ID để định kiểu vì nó có độ ưu tiên rất cao (xem phần Specificity), khiến cho việc ghi đè style sau này trở nên khó khăn và không thể tái sử dụng style đó.
+* **Bộ chọn theo Thuộc tính (Attribute Selector)**: Chọn các phần tử dựa trên thuộc tính hoặc giá trị của thuộc tính. Ký hiệu bằng dấu ngoặc vuông (\`[]\`).
+    * Ví dụ: \`[data-type='primary'] { color: red; }\` chọn phần tử có \`data-type\` chính xác là \`primary\`.
+    * Bạn có thể tìm kiếm sự tồn tại của thuộc tính (\`[data-type]\`), hoặc so khớp các phần của chuỗi giá trị (\`*=\`, \`^=\`, \`$=\`).
+
+### Lớp giả (Pseudo-classes) và Phần tử giả (Pseudo-elements)
+
+* **Lớp giả (\`:\`)**: Định kiểu cho các phần tử dựa trên một **trạng thái** cụ thể của chúng (ví dụ: khi được tương tác).
+    * Ví dụ: \`:hover\` (khi di chuột qua), \`:nth-child(even)\` (chọn các phần tử con chẵn).
+* **Phần tử giả (\`::\`)**: Hoạt động như thể chúng chèn một **phần tử mới** bằng CSS để định kiểu cho một phần cụ thể của phần tử đã chọn.
+    * Ví dụ: \`::before\` (chèn nội dung vào đầu phần tử), \`::after\` (chèn vào cuối), \`::marker\` (định kiểu cho dấu đầu dòng/số của danh sách), \`::selection\` (định kiểu cho văn bản được bôi đen).
+    * **Lưu ý quan trọng**: Phần tử giả sử dụng hai dấu hai chấm (\`::\`). Các trình duyệt cũ hơn hỗ trợ một dấu (\`:\`) cho các phần tử giả ban đầu như \`:before\` và \`:after\` để tương thích ngược.
+
+### Bộ chọn phức hợp (Complex Selectors)
+
+Đây là cách kết hợp các bộ chọn để tạo ra các quy tắc có mục tiêu chính xác hơn.
+
+* **Bộ tổ hợp (Combinators)**: Các ký tự nằm giữa hai bộ chọn.
+    * **Descendant combinator (dấu cách)**: Chọn các phần tử con cháu. Ví dụ: \`p strong\` chọn mọi phần tử \`<strong>\` nằm *bên trong* một phần tử \`<p>\`.
+    * **Child combinator (\`>\`)**: Chỉ chọn các phần tử con **trực tiếp**. Ví dụ: \`.top > div\` chỉ chọn các \`<div>\` là con trực tiếp của \`.top\`.
+    * **Next sibling combinator (\`+\`)**: Chọn phần tử nằm **ngay liền kề sau** một phần tử khác (cùng cấp cha). Ví dụ: \`h2 + p\` chọn đoạn \`<p>\` đầu tiên ngay sau thẻ \`<h2>\`.
+    * **Subsequent-sibling combinator (\`~\`)**: Chọn tất cả các phần tử anh em nằm **sau** một phần tử khác (cùng cấp cha).
+
+---
+
+## Cơ chế Tầng (The Cascade)
+
+CSS là viết tắt của **Cascading** Stylesheets. "Cascade" (Tầng) là thuật toán mà trình duyệt sử dụng để giải quyết xung đột khi có nhiều quy tắc CSS áp dụng cho cùng một phần tử. Thuật toán này diễn ra theo 4 giai đoạn.
+
+1.  **Vị trí và Thứ tự xuất hiện (Position and Order of Appearance)**:
+    * Nếu các bộ chọn có cùng độ ưu tiên, quy tắc được định nghĩa **sau cùng** sẽ thắng.
+    * Thứ tự nguồn gốc style cũng được tính đến: Style nội tuyến (inline \`style\` attribute) > Style trong thẻ \`<style>\` trong trang > Style từ file CSS được liên kết qua \`<link>\`.
+    * **Lưu ý quan trọng**: Bạn có thể khai báo một thuộc tính hai lần để tạo *fallback*. Trình duyệt sẽ áp dụng giá trị cuối cùng mà nó hiểu.
+        \`\`\`css
+        .my-element {
+          font-size: 1.5rem; /* Fallback cho trình duyệt cũ */
+          font-size: clamp(1.5rem, 1rem + 3vw, 2rem); /* Trình duyệt mới sẽ dùng cái này */
+        }
+        \`\`\`
+
+2.  **Độ ưu tiên (Specificity)**:
+    * Đây là một thuật toán tính điểm để xác định bộ chọn nào "mạnh" hơn. Một bộ chọn có độ ưu tiên cao hơn sẽ luôn thắng, bất kể vị trí của nó trong file CSS. (Chi tiết trong phần tiếp theo).
+
+3.  **Nguồn gốc (Origin)**:
+    * CSS có thể đến từ nhiều nguồn. Thứ tự ưu tiên từ **thấp đến cao** là:
+        1.  **Styles mặc định của trình duyệt** (User agent base styles).
+        2.  **Styles tùy chỉnh của người dùng** (Local user styles - từ tiện ích mở rộng hoặc cài đặt hệ điều hành).
+        3.  **Styles của tác giả** (Authored CSS - là CSS bạn viết).
+        4.  **Styles \`!important\` của tác giả**.
+        5.  **Styles \`!important\` của người dùng**.
+        6.  **Styles \`!important\` của trình duyệt**.
+
+4.  **Mức độ quan trọng (Importance)**:
+    * Không phải mọi quy tắc đều có trọng số như nhau.
+    * Các quy tắc của \`animation\` và \`transition\` đang hoạt động sẽ có độ ưu tiên cao hơn các quy tắc thông thường.
+    * Quy tắc \`!important\` sẽ ghi đè hầu hết các quy tắc khác.
+    * **Lưu ý quan trọng**: Lạm dụng \`!important\` là một thực hành xấu vì nó phá vỡ cơ chế tầng tự nhiên và làm cho việc gỡ lỗi trở nên rất khó khăn.
+
+---
+
+## Độ ưu tiên (Specificity)
+
+Đây là cơ chế tính điểm để quyết định quy tắc CSS nào sẽ được áp dụng khi có xung đột. Điểm được tính theo bộ ba (A, B, C).
+
+* **A: ID selectors**: Mỗi bộ chọn ID (\`#my-id\`) cộng 1 điểm vào cột A.
+* **B: Class, Attribute, và Pseudo-class selectors**: Mỗi bộ chọn lớp (\`.my-class\`), thuộc tính (\`[type="submit"]\`), hoặc lớp giả (\`:hover\`) cộng 1 điểm vào cột B.
+* **C: Type và Pseudo-element selectors**: Mỗi bộ chọn loại (\`div\`) hoặc phần tử giả (\`::before\`) cộng 1 điểm vào cột C.
+
+**Cách so sánh:**
+Trình duyệt so sánh từ trái sang phải: \`(A, B, C)\`.
+* Một quy tắc với \`A=1\` sẽ luôn thắng một quy tắc với \`A=0\`, bất kể giá trị B và C lớn đến đâu. Ví dụ: \`(1,0,0)\` mạnh hơn \`(0,99,99)\`.
+* Nếu A bằng nhau, trình duyệt sẽ so sánh B. Nếu B cũng bằng nhau, nó sẽ so sánh C.
+* Nếu cả (A,B,C) đều bằng nhau, quy tắc xuất hiện cuối cùng sẽ thắng (quay lại quy tắc Vị trí).
+
+**Lưu ý quan trọng**:
+
+* **Bộ chọn universal (\`*\`) và bộ tổ hợp (\`>\`, \`+\`, \`~\`, \` \`)** không làm tăng độ ưu tiên.
+* Lớp giả \`:where()\` luôn có độ ưu tiên là \`(0,0,0)\`, rất hữu ích để tạo các style cơ bản dễ bị ghi đè.
+* **Style nội tuyến** (\`<div style="color: red">\`) có độ ưu tiên cao hơn mọi bộ chọn trong stylesheet, nhưng nó không phải là một phần của thang điểm (A,B,C).
+* **\`!important\`** không phải là một phần của độ ưu tiên. Nó đưa khai báo lên một cấp độ nguồn gốc khác (xem phần Cơ chế Tầng).
+* **Hãy giữ các bộ chọn của bạn càng đơn giản càng tốt**. Các bộ chọn quá cụ thể (ví dụ: \`article .card .dark a[href]:hover\`) sẽ rất khó để ghi đè sau này.
+
+---
+
+## Sự kế thừa (Inheritance)
+
+Một số thuộc tính CSS, khi được áp dụng cho một phần tử cha, sẽ tự động được truyền xuống (kế thừa) cho các phần tử con của nó.
+
+* **Các thuộc tính được kế thừa mặc định**: Chủ yếu là các thuộc tính liên quan đến văn bản như \`color\`, \`font-family\`, \`font-size\`, \`font-weight\`, \`line-height\`, \`text-align\`,...
+* **Các thuộc tính không được kế thừa mặc định**: Chủ yếu là các thuộc tính liên quan đến layout và box model như \`background\`, \`border\`, \`padding\`, \`margin\`, \`width\`, \`height\`,...
+
+### Kiểm soát sự kế thừa
+
+CSS cung cấp các từ khóa đặc biệt để bạn kiểm soát hành vi này:
+
+* **\`inherit\`**: Buộc một thuộc tính phải lấy giá trị đã được tính toán của phần tử cha trực tiếp của nó. Rất hữu ích để tạo ra các ngoại lệ.
+* **\`initial\`**: Đặt lại một thuộc tính về **giá trị mặc định ban đầu** của nó theo đặc tả CSS.
+* **\`unset\`**: Hoạt động một cách thông minh:
+    * Nếu thuộc tính đó **có** kế thừa theo mặc định (như \`color\`), \`unset\` sẽ hoạt động giống như \`inherit\`.
+    * Nếu thuộc tính đó **không** kế thừa theo mặc định (như \`margin\`), \`unset\` sẽ hoạt động giống như \`initial\`.
+* **\`all: unset;\`**: Đây là một cách mạnh mẽ để reset toàn bộ các thuộc tính của một phần tử, khiến nó gần như không bị ảnh hưởng bởi các style từ bên ngoài, chỉ giữ lại các hành vi kế thừa cơ bản.
+
+---
+
+## Các hàm trong CSS (Functions)
+
+CSS cung cấp rất nhiều hàm tích hợp sẵn, tương tự như các ngôn ngữ lập trình khác. **Hàm** là một đoạn mã độc lập, có tên gọi, thực hiện một tác vụ cụ thể. Bạn gọi hàm bằng tên và có thể truyền vào các **đối số** (arguments) để hàm xử lý và trả về kết quả.
+
+Hầu hết các hàm trong CSS đều là **hàm thuần túy** (pure functions), nghĩa là với cùng một đối số đầu vào, chúng sẽ luôn trả về cùng một kết quả.
+
+---
+
+## Các loại hàm trong CSS
+
+Dưới đây là tổng quan về các nhóm hàm chính trong CSS.
+
+### Hàm chọn và Biến
+
+* **Bộ chọn dạng hàm**: Các hàm này nhận các bộ chọn khác làm đối số để xác định phần tử cần áp dụng style.
+    * \`:is()\`: Khớp với bất kỳ bộ chọn nào trong danh sách. Ví dụ: \`.post :is(h1, h2, h3)\` sẽ áp dụng style cho các thẻ \`h1\`, \`h2\`, \`h3\` bên trong \`.post\`.
+    * \`:not()\`: Khớp với những phần tử không tương ứng với bộ chọn bên trong.
+
+* **Thuộc tính tùy chỉnh (Biến CSS) và \`var()\`**:
+    * Hàm \`var()\` được dùng để lấy giá trị của một thuộc tính tùy chỉnh (biến).
+    * **Cú pháp**: \`var(--ten-bien, gia-tri-du-phong)\`
+    * Nếu biến \`--ten-bien\` không tồn tại, hàm sẽ sử dụng \`gia-tri-du-phong\`.
+        \`\`\`css
+        :root {
+          --mau-chinh: blue;
+        }
+        .element {
+          /* a: Dùng giá trị của biến --mau-chinh */
+          background-color: var(--mau-chinh);
+
+          /* b: Dùng màu hotpink nếu --mau-khac không được định nghĩa */
+          color: var(--mau-khac, hotpink);
+        }
+        \`\`\`
+
+### Các hàm trả về giá trị
+
+* \`attr()\`: Lấy giá trị của một thuộc tính HTML của phần tử. Rất hữu ích khi dùng với pseudo-element.
+    * Ví dụ: \`a::after { content: attr(href); }\` sẽ hiển thị URL của liên kết ngay sau văn bản của nó.
+* \`url()\`: Dùng để chèn một tài nguyên từ một đường dẫn URL, chẳng hạn như hình ảnh, font chữ.
+    * Ví dụ: \`background-image: url('/images/background.jpg');\`
+
+### Hàm màu sắc
+
+Các hàm này dùng để định nghĩa màu sắc, nhận vào các đối số cấu hình và trả về một giá trị màu.
+* **Ví dụ**: \`rgb()\`, \`hsl()\`, \`lab()\`, \`lch()\`, \`oklab()\`, \`oklch()\`, \`color()\`.
+
+---
+
+## Hàm toán học
+
+CSS cung cấp nhiều hàm toán học để thực hiện các phép tính động.
+
+### Số học
+* \`calc()\`: Thực hiện một phép tính toán. Điểm mạnh nhất của nó là khả năng **kết hợp nhiều đơn vị khác nhau**.
+    * Ví dụ: \`width: calc(100% - 50px);\`
+* \`min()\`: Trả về **giá trị nhỏ nhất** trong danh sách các đối số.
+    * Ví dụ: \`width: min(90vw, 800px);\` (chiều rộng sẽ là 90% chiều rộng viewport, nhưng không bao giờ vượt quá 800px).
+* \`max()\`: Trả về **giá trị lớn nhất** trong danh sách các đối số.
+    * Ví dụ: \`font-size: max(16px, 1.2vw);\` (cỡ chữ sẽ là 16px hoặc lớn hơn, tùy thuộc vào chiều rộng viewport).
+* \`clamp()\`: Giới hạn một giá trị trong một khoảng.
+    * **Cú pháp**: \`clamp(MIN, IDEAL, MAX)\`
+    * Giá trị sẽ là \`IDEAL\`, nhưng không bao giờ nhỏ hơn \`MIN\` và không bao giờ lớn hơn \`MAX\`. Rất tuyệt vời cho typography đáp ứng (responsive typography).
+    * Ví dụ: \`font-size: clamp(1rem, 1rem + 3vw, 2.5rem);\`
+
+### Lượng giác, Số mũ và Dấu
+Đây là các hàm toán học nâng cao hơn:
+* **Hàm lượng giác**: \`sin()\`, \`cos()\`, \`tan()\`, và các hàm ngược \`asin()\`, \`acos()\`, \`atan()\`, \`atan2()\`. Dùng để tạo các hiệu ứng hoạt ảnh theo quỹ đạo hoặc hình tròn.
+* **Hàm số mũ**: \`pow()\` (lũy thừa), \`sqrt()\` (căn bậc hai), \`log()\` (logarit), \`exp()\` (lũy thừa cơ số e).
+* **Hàm liên quan đến dấu**: \`abs()\` (giá trị tuyệt đối), \`sign()\` (trả về dấu của một số: 1, -1, hoặc 0).
+
+---
+
+## Hàm hình dạng (Shapes)
+
+Các hàm này được sử dụng với thuộc tính \`clip-path\` hoặc \`shape-outside\` để cắt một phần tử hoặc định hình dòng chảy của nội dung xung quanh nó.
+* **Ví dụ**: \`circle()\`, \`ellipse()\`, \`inset()\`, \`polygon()\`, \`path()\`.
+
+---
+
+## Hàm biến đổi (Transforms)
+
+Các hàm này được sử dụng với thuộc tính \`transform\` để xoay, co giãn, di chuyển hoặc làm nghiêng một phần tử.
+* **Xoay**: \`rotate()\`, \`rotateX()\`, \`rotateY()\`, \`rotateZ()\`, \`rotate3d()\`
+* **Tỷ lệ**: \`scale()\`, \`scaleX()\`, \`scaleY()\`, \`scaleZ()\`, \`scale3d()\`
+* **Dịch chuyển**: \`translate()\`, \`translateX()\`, \`translateY()\`, \`translateZ()\`, \`translate3d()\`
+* **Làm nghiêng**: \`skew()\`, \`skewX()\`, \`skewY()\`
+* **Phối cảnh**: \`perspective()\` (tạo cảm giác chiều sâu 3D).
+
+**Lưu ý quan trọng**: Ngày nay, bạn cũng có thể sử dụng các thuộc tính riêng lẻ như \`rotate\`, \`scale\`, và \`translate\` thay vì gộp tất cả vào trong \`transform\`, giúp việc tạo \`transition\` cho từng hiệu ứng trở nên dễ dàng và hiệu quả hơn.
+
+\`\`\`css
+/* Cách cũ */
+.element {
+  transform: rotate(10deg) scale(1.2);
+}
+
+/* Cách mới (tốt hơn cho animation/transition) */
+.element {
+  rotate: 10deg;
+  scale: 1.2;
+}
+\`\`\``;
+---
+
+<Layout>
+  <ReadLayout title="Tài liệu học Astro" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
+</Layout>

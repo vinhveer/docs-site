@@ -1,13 +1,140 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Đối tượng và Prototype
+
+## Phần 1: Đối tượng (Objects) - Những điều cơ bản
+
+**Đối tượng (Object)** là một kiểu dữ liệu phức hợp trong JavaScript. Điểm khác biệt quan trọng nhất so với các kiểu dữ liệu nguyên thủy là đối tượng **có thể thay đổi (mutable)**. Một đối tượng là một tập hợp các cặp **key-value** (khóa-giá trị), được gọi là các **thuộc tính (properties)**.
+
+### Tạo một đối tượng
+
+Cách phổ biến và đơn giản nhất để tạo một đối tượng là sử dụng **cú pháp đối tượng nguyên bản (object literal)**, tức là một cặp dấu ngoặc nhọn \`{}\`.
+
+\`\`\`javascript
+let myObject = {
+    "key": "value",
+    "anotherKey": true,
+    "aNumber": 100
+};
+\`\`\`
+* **Khóa (Key)**: Phải là một chuỗi (string) hoặc một Symbol. Nếu khóa tuân theo quy tắc đặt tên biến, bạn có thể bỏ qua dấu ngoặc kép.
+* **Giá trị (Value)**: Có thể là bất kỳ kiểu dữ liệu nào trong JavaScript, kể cả một đối tượng khác.
+* **Phương thức (Method)**: Khi giá trị của một thuộc tính là một hàm (function), thuộc tính đó được gọi là một phương thức.
+
+\`\`\`javascript
+const person = {
+    name: "John",
+    greet: function() {
+        console.log("Xin chào!");
+    }
+};
+
+person.greet(); // Gọi phương thức
+\`\`\`
+
+Bạn cũng có thể tạo một đối tượng bằng từ khóa \`new Object()\`, nhưng cách này ít được sử dụng hơn vì cú pháp object literal ngắn gọn và linh hoạt hơn.
+
+## Phần 2: Truy cập thuộc tính (Property Accessors)
+
+Có hai cách để truy cập, thiết lập hoặc thay đổi thuộc tính của một đối tượng.
+
+### 1. Ký pháp chấm (Dot Notation)
+
+Sử dụng một dấu chấm (\`.\`) giữa đối tượng và khóa thuộc tính.
+
+\`\`\`javascript
+const myObj = {
+    myProp: "Giá trị chuỗi."
+};
+
+console.log(myObj.myProp); // "Giá trị chuỗi."
+
+// Thêm hoặc thay đổi thuộc tính
+myObj.newProp = true;
+\`\`\`
+
+* **Ưu điểm**: Ngắn gọn, dễ đọc.
+* **Hạn chế**: Khóa thuộc tính phải là một **định danh (identifier)** hợp lệ (không chứa khoảng trắng, không bắt đầu bằng số,...).
+
+### 2. Ký pháp ngoặc vuông (Bracket Notation)
+
+Sử dụng một cặp dấu ngoặc vuông \`[]\` chứa một giá trị sẽ được đánh giá thành một chuỗi (hoặc Symbol) đại diện cho khóa.
+
+\`\`\`javascript
+const myObj = {
+    "myProp": "Giá trị chuỗi.",
+    "key with spaces": true
+};
+
+console.log(myObj["myProp"]); // "Giá trị chuỗi."
+console.log(myObj["key with spaces"]); // true
+\`\`\`
+
+* **Ưu điểm**: Rất linh hoạt.
+    * Cho phép truy cập các khóa chứa ký tự đặc biệt hoặc khoảng trắng.
+    * Cho phép truy cập thuộc tính một cách **động** bằng cách sử dụng một biến.
+        \`\`\`javascript
+        let propertyName = "myProp";
+        console.log(myObj[propertyName]); // "Giá trị chuỗi."
+        \`\`\`
+
+### Toán tử Optional Chaining (\`?.\`)
+
+Được giới thiệu trong ES2020, toán tử này cho phép bạn truy cập các thuộc tính lồng nhau một cách an toàn mà không gây ra lỗi nếu một trong các thuộc tính trung gian là \`null\` hoặc \`undefined\`.
+
+\`\`\`javascript
+const myObj = {};
+console.log(myObj.missingProp?.childProp); // Trả về undefined thay vì báo lỗi
+\`\`\`
+
+## Phần 3: Kế thừa qua Prototype (Prototypal Inheritance)
+
+Đây là một cơ chế cốt lõi trong JavaScript. Mỗi đối tượng đều có một thuộc tính nội bộ, gọi là **prototype**, mà nó kế thừa các thuộc tính và phương thức từ đó.
+
+* **Chuỗi Prototype (Prototype Chain)**: Khi bạn cố gắng truy cập một thuộc tính trên một đối tượng, JavaScript sẽ tìm kiếm thuộc tính đó trên chính đối tượng đó trước. Nếu không tìm thấy, nó sẽ tiếp tục tìm kiếm trên prototype của đối tượng đó, rồi đến prototype của prototype, và cứ thế tiếp tục cho đến khi tìm thấy thuộc tính hoặc đến cuối chuỗi (khi prototype là \`null\`).
+* Tất cả các đối tượng được tạo bằng cú pháp object literal đều kế thừa từ \`Object.prototype\`, đó là lý do tại sao chúng có sẵn các phương thức như \`.toString()\` và \`.hasOwnProperty()\`.
+
+### Làm việc với Prototype
+
+* Nên **tránh** truy cập trực tiếp \`__proto__\` vì nó không phải là một chuẩn chính thức.
+* Sử dụng các phương thức tích hợp sẵn:
+    * \`Object.getPrototypeOf(obj)\`: Để đọc prototype của một đối tượng.
+    * \`Object.setPrototypeOf(obj, proto)\`: Để thiết lập prototype cho một đối tượng.
+    * \`Object.create(proto)\`: Phương thức tốt nhất để tạo một đối tượng mới với một prototype được chỉ định.
+* Để kiểm tra một thuộc tính có phải là của riêng đối tượng đó (không phải kế thừa), hãy dùng \`Object.hasOwn(obj, prop)\`.
+
+## Phần 4: Các khái niệm nâng cao - Property Descriptors
+
+Mỗi thuộc tính của một đối tượng đều có một tập hợp các thuộc tính ẩn chứa siêu dữ liệu, gọi là **bộ mô tả thuộc tính (property descriptors)**. Chúng kiểm soát cách thuộc tính đó có thể được truy cập và thay đổi.
+
+Có hai loại descriptors:
+1.  **Data Descriptors**:
+    * \`value\`: Giá trị của thuộc tính.
+    * \`writable\`: \`true\` nếu giá trị có thể được thay đổi.
+2.  **Accessor Descriptors**:
+    * \`get\`: Một hàm được gọi khi thuộc tính được truy cập (đọc).
+    * \`set\`: Một hàm được gọi khi thuộc tính được gán giá trị mới (ghi).
+
+Cả hai loại đều có chung:
+* \`configurable\`: \`true\` nếu thuộc tính có thể bị xóa hoặc các descriptor của nó có thể bị thay đổi.
+* \`enumerable\`: \`true\` nếu thuộc tính sẽ xuất hiện trong các vòng lặp như \`for...in\`.
+
+**Phương thức \`Object.defineProperty()\`**:
+Đây là phương thức cho phép bạn định nghĩa hoặc sửa đổi một thuộc tính với quyền kiểm soát chi tiết các descriptor của nó.
+
+**Lưu ý**: Các thuộc tính được tạo bằng \`Object.defineProperty()\` mặc định sẽ có \`writable\`, \`configurable\`, và \`enumerable\` là \`false\`. Ngược lại, các thuộc tính được tạo bằng cú pháp object literal hoặc ký pháp chấm/ngoặc vuông sẽ có các giá trị này là \`true\`.
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-    </ReadLayout>
+  <ReadLayout title="Đối tượng và Prototype" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

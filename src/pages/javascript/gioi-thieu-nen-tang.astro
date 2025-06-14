@@ -1,13 +1,108 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Biến và Các Khái Niệm Chuyên Sâu
+
+## Phần 1: Biến (Variables)
+
+Biến là một cấu trúc dữ liệu dùng để gán một cái tên đại diện cho một giá trị. Tên của biến được gọi là **định danh (identifier)**.
+
+### Quy tắc đặt tên Định danh
+
+* Có thể chứa các chữ cái Unicode, dấu đô la (\`$\`), dấu gạch dưới (\`_\`), và chữ số (0-9).
+* **Không được** chứa khoảng trắng.
+* Phải bắt đầu bằng một chữ cái, \`_\`, hoặc \`$\`. **Không được** bắt đầu bằng chữ số.
+* **Không được** là các "từ khóa dành riêng" của JavaScript (ví dụ: \`let\`, \`if\`, \`function\`).
+* **Không được** chứa các ký tự đặc biệt như \`!\`, \`.\`, \`+\`, \`*\`.
+
+**Quy ước đặt tên (Best Practices):**
+
+* **camelCase**: Rất phổ biến, viết hoa chữ cái đầu của mỗi từ trừ từ đầu tiên (ví dụ: \`myVariableName\`).
+* **PascalCase**: Thường dùng cho tên \`class\`, viết hoa chữ cái đầu của tất cả các từ (ví dụ: \`MyClassName\`).
+* Tên biến nên mô tả ngắn gọn dữ liệu nó chứa (ví dụ: \`distance\` tốt hơn \`miles\`).
+* Định danh bắt đầu bằng dấu gạch dưới (\`_\`) thường được dùng theo quy ước để chỉ ra một thuộc tính "riêng tư" (private).
+
+### Khai báo biến
+
+Có 3 từ khóa để khai báo biến: \`let\`, \`const\`, và \`var\`.
+
+* **\`let\`**: Dùng để khai báo một biến có thể thay đổi giá trị. Đây là cách khai báo biến tiêu chuẩn trong JavaScript hiện đại.
+    * Bạn có thể khai báo trước và gán giá trị (khởi tạo) sau. Nếu không khởi tạo, biến sẽ có giá trị mặc định là \`undefined\`.
+    * Việc khai báo lại một biến đã có với \`let\` trong cùng một phạm vi sẽ gây ra lỗi.
+
+    \`\`\`javascript
+    let myVariable = 10;
+    myVariable = 20; // Hợp lệ
+    let myVariable = 30; // Lỗi: SyntaxError
+    \`\`\`
+
+* **\`var\`**: Cách khai báo biến cũ hơn. Nó vẫn hoạt động nhưng có một số hành vi khó đoán (sẽ giải thích trong phần Scope và Hoisting). **Nên ưu tiên dùng \`let\` thay cho \`var\`** trong các codebase hiện đại.
+
+* **\`const\` (Hằng số)**:
+    * Dùng để khai báo một hằng số, là một biến có giá trị **không thể thay đổi** sau khi được gán.
+    * **Bắt buộc** phải được khởi tạo ngay khi khai báo.
+    * **Lưu ý quan trọng**: Khi một \`const\` chứa một đối tượng (object) hoặc mảng (array), bạn **không thể** gán lại cho nó một đối tượng/mảng khác, nhưng bạn **có thể** thay đổi các thuộc tính hoặc phần tử bên trong đối tượng/mảng đó.
+        \`\`\`javascript
+        const person = { name: "John" };
+        person.name = "Jane"; // Hợp lệ
+        // person = { name: "Jane" }; // Lỗi: TypeError
+        \`\`\`
+
+### Phạm vi của biến (Variable Scope)
+
+Phạm vi là khu vực trong mã nguồn mà một biến có thể được truy cập.
+
+* **Phạm vi khối (Block Scope)**: Áp dụng cho \`let\` và \`const\`. Biến chỉ tồn tại và có thể được truy cập bên trong cặp dấu ngoặc nhọn \`{}\` nơi nó được khai báo.
+* **Phạm vi hàm (Function Scope)**: Áp dụng cho \`var\`. Biến có thể được truy cập ở bất kỳ đâu bên trong hàm chứa nó, bất kể nó được khai báo ở khối nào trong hàm.
+* **Phạm vi toàn cục (Global Scope)**: Biến được khai báo bên ngoài bất kỳ khối hoặc hàm nào. Nó có thể được truy cập từ mọi nơi trong ứng dụng. Nên hạn chế sử dụng biến toàn cục để tránh xung đột.
+
+### Hoisting (Đưa lên đầu)
+
+Hoisting là một hành vi của JavaScript, trong đó các khai báo biến và hàm được "di chuyển" lên đầu phạm vi của chúng trước khi mã được thực thi.
+
+* Biến khai báo bằng \`var\` được hoisting và được khởi tạo với giá trị \`undefined\`. Điều này có nghĩa là bạn có thể tham chiếu đến biến đó trước khi khai báo mà không gặp lỗi (chỉ nhận được \`undefined\`).
+* Biến khai báo bằng \`let\` và \`const\` cũng được hoisting nhưng chúng **không được khởi tạo**. Việc cố gắng truy cập chúng trước dòng khai báo sẽ gây ra lỗi \`ReferenceError\`. Khoảng không gian từ đầu khối đến dòng khai báo được gọi là **"Vùng chết thời gian" (Temporal Dead Zone - TDZ)**.
+
+## Phụ lục: Các khái niệm chuyên sâu
+
+### Kế thừa qua Prototype (Prototypal Inheritance)
+
+Mỗi kiểu dữ liệu nguyên thủy (trừ \`null\` và \`undefined\`) đều có một "prototype" tương ứng – một đối tượng bao bọc cung cấp các phương thức để làm việc với giá trị. Đây là lý do tại sao một chuỗi ký tự đơn giản vẫn có thể gọi các phương thức như \`.toUpperCase()\`.
+
+### Tự động chèn dấu chấm phẩy (Automatic Semicolon Insertion - ASI)
+
+Đây là một cơ chế sửa lỗi của JavaScript. Nếu trình thông dịch gặp một token không hợp lệ, nó sẽ thử thêm một dấu chấm phẩy vào trước token đó để sửa lỗi cú pháp. Đây là một cơ chế sửa lỗi, không phải là một tính năng linh hoạt. Bạn nên luôn tự thêm dấu chấm phẩy để đảm bảo mã nguồn chính xác.
+
+### Chế độ nghiêm ngặt (Strict Mode)
+
+Bằng cách thêm chuỗi \`"use strict";\` vào đầu một file script hoặc một hàm, bạn có thể kích hoạt "chế độ nghiêm ngặt". Chế độ này áp dụng một bộ quy tắc khắt khe hơn, ngăn chặn một số hành động "không an toàn", chuyển các lỗi "thầm lặng" thành các lỗi rõ ràng, và cấm sử dụng một số cú pháp có thể xung đột với các tính năng trong tương lai.
+
+### Tham chiếu (By-reference) và Tham trị (By-value)
+
+* **Tham trị (Primitives)**: Khi bạn gán một giá trị nguyên thủy (số, chuỗi, boolean,...) từ biến này sang biến khác, một **bản sao** của giá trị đó sẽ được tạo ra.
+* **Tham chiếu (Objects)**: Khi bạn gán một đối tượng (object, array, function) cho một biến, biến đó không chứa đối tượng mà chứa một **tham chiếu** (một con trỏ) đến vị trí của đối tượng đó trong bộ nhớ. Do đó, việc thay đổi đối tượng thông qua một biến sẽ ảnh hưởng đến tất cả các biến khác cùng tham chiếu đến đối tượng đó.
+
+### Luồng chính, Call Stack, và Vòng lặp sự kiện
+
+Đây là mô hình giúp JavaScript xử lý các tác vụ bất đồng bộ mặc dù nó về cơ bản là đơn luồng.
+
+* **Luồng chính (Main Thread)**: JavaScript chỉ có thể thực hiện một tác vụ tại một thời điểm trên luồng chính này.
+* **Call Stack (Ngăn xếp cuộc gọi)**: Là một cấu trúc dữ liệu kiểu "vào sau, ra trước" (LIFO) dùng để quản lý các ngữ cảnh thực thi (các hàm đang được gọi). Khi một hàm được gọi, nó được đẩy vào đỉnh stack. Khi hàm thực thi xong, nó được lấy ra khỏi stack.
+* **Callback Queue (Hàng đợi Callback)**: Khi một tác vụ bất đồng bộ (như \`setTimeout\` hoặc một yêu cầu mạng) hoàn thành, hàm callback của nó không được đưa ngay vào Call Stack mà được đặt vào Hàng đợi Callback.
+* **Event Loop (Vòng lặp sự kiện)**: Đây là một quy trình liên tục kiểm tra. Khi **Call Stack trống**, Event Loop sẽ lấy tác vụ đầu tiên từ **Callback Queue** và đẩy nó vào **Call Stack** để thực thi.
+
+Mô hình này cho phép các tác vụ tốn thời gian chạy ở chế độ nền mà không làm "đóng băng" luồng chính, đảm bảo giao diện người dùng luôn phản hồi.
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-    </ReadLayout>
+  <ReadLayout title="Biến và Các Khái Niệm Chuyên Sâu" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

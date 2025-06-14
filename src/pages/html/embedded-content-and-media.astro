@@ -1,18 +1,200 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Embedded Content and Media
+
+- Images: Hiển thị hình ảnh (\`<img>\`).
+- Audio and Video: Phát âm thanh và video (\`<audio>\`, \`<video>\`).
+- Tables: Hiển thị dữ liệu dạng bảng, có hàng và cột (\`<table>\`).
+
+## Hình ảnh (Images)
+
+Phần này giới thiệu cách nhúng và tối ưu hóa hình ảnh trong HTML, tập trung vào ngữ nghĩa, hiệu suất và khả năng truy cập.
+
+### Nguyên tắc cơ bản
+
+- Phân biệt mục đích:
+  - Hình ảnh trang trí (như hình nền, màu chuyển sắc): Nên được thêm bằng CSS (\`background-image\`).
+  - Hình ảnh nội dung (bổ sung thông tin, ngữ cảnh cho tài liệu): Phải được nhúng bằng HTML, chủ yếu qua thẻ \`<img>\`.
+
+### Thẻ \`<img>\` và các thuộc tính thiết yếu
+
+- **src (Source):** Đường dẫn đến tệp hình ảnh. Đây là thuộc tính bắt buộc.
+
+- **alt (Alternative Text):** Cung cấp văn bản thay thế cho hình ảnh.  
+  **CỰC KỲ QUAN TRỌNG CHO KHẢ NĂNG TRUY CẬP (ACCESSIBILITY):** Nó mô tả hình ảnh cho trình đọc màn hình, công cụ tìm kiếm và hiển thị khi hình ảnh không tải được.
+  - **Ngữ cảnh là vua:** Nội dung alt phụ thuộc vào mục đích của hình ảnh trong ngữ cảnh của trang.
+  - **Ngắn gọn, mô tả đúng thông tin:** Mô tả những gì hình ảnh truyền tải, không cần bắt đầu bằng "Hình ảnh của...".
+  - **Hình ảnh chỉ để trang trí:** Sử dụng \`alt=""\` (một chuỗi rỗng). Điều này cho trình đọc màn hình biết hãy bỏ qua nó.
+  - **Icon (biểu tượng):** Mô tả chức năng, không phải hình dáng (ví dụ: \`alt="Tìm kiếm"\` cho icon kính lúp).
+
+### Hình ảnh đáp ứng (Responsive Images)
+
+Để đảm bảo hình ảnh hiển thị tốt và tối ưu trên mọi thiết bị, HTML cung cấp:
+
+- **Thuộc tính \`srcset\`:** Cho phép cung cấp nhiều phiên bản của một hình ảnh với các độ phân giải khác nhau (1x, 2x...) hoặc kích thước khác nhau (400w, 800w... đi kèm thuộc tính \`sizes\`). Trình duyệt sẽ tự động chọn phiên bản phù hợp nhất.
+
+- **Thẻ \`<picture>\`:** Cung cấp khả năng kiểm soát mạnh mẽ hơn. Nó cho phép bạn định nghĩa nhiều nguồn (\`<source>\`) với các điều kiện khác nhau (như kích thước màn hình, định dạng file) và một thẻ \`<img>\` dự phòng. Rất hữu ích khi bạn muốn hiển thị các hình ảnh khác nhau trên mobile và desktop (art direction) hoặc cung cấp các định dạng hiện đại như WebP.
+
+### Tối ưu hiệu suất
+
+- **Tải từng phần (Lazy Loading):** \`loading="lazy"\`  
+  Công dụng: Trì hoãn việc tải các hình ảnh nằm ngoài màn hình cho đến khi người dùng cuộn gần đến chúng. Giúp cải thiện đáng kể tốc độ tải trang.
+
+- **Giảm thiểu thay đổi bố cục (Content Layout Shift):**  
+  **Lưu ý quan trọng:** Luôn thêm thuộc tính \`width\` và \`height\` (không cần đơn vị) vào thẻ \`<img>\`. Điều này giúp trình duyệt biết được tỷ lệ khung hình của ảnh và dành ra một khoảng không gian chính xác cho nó ngay từ đầu, tránh hiện tượng trang bị "nhảy" khi ảnh tải xong.
+
+### Thẻ \`<figure>\` và \`<figcaption>\`
+
+- Dùng \`<figure>\` để bao bọc một đơn vị nội dung độc lập như hình ảnh, biểu đồ, đoạn mã.
+- Dùng \`<figcaption>\` (đặt bên trong \`<figure>\`) để cung cấp chú thích cho đơn vị nội dung đó.
+
+## Âm thanh và Video (Audio & Video)
+
+Phần này hướng dẫn cách nhúng các tệp đa phương tiện vào trang web.
+
+### Các thẻ cơ bản: \`<audio>\` và \`<video>\`
+
+- Cả hai thẻ đều có thể dùng thuộc tính \`src\` để chỉ định một nguồn duy nhất.
+- **Cách làm tốt nhất:** Sử dụng nhiều thẻ \`<source>\` bên trong thẻ \`<audio>\` hoặc \`<video>\`, mỗi thẻ trỏ đến một định dạng tệp khác nhau (ví dụ: .mp4, .webm). Trình duyệt sẽ sử dụng định dạng đầu tiên mà nó hỗ trợ.
+
+### Các thuộc tính quan trọng
+
+- **controls:** **LUÔN LUÔN SỬ DỤNG.** Thuộc tính này hiển thị các nút điều khiển mặc định của trình duyệt (play/pause, âm lượng, toàn màn hình). Nếu không có, người dùng sẽ không thể tương tác với media.
+
+- **autoplay:** Tự động phát. Nên tránh vì nó gây trải nghiệm không tốt cho người dùng. Hầu hết các trình duyệt hiện nay sẽ chặn autoplay trừ khi media cũng được tắt tiếng (\`muted\`).
+
+- **loop:** Lặp lại media sau khi kết thúc.
+
+- **muted:** Tắt tiếng mặc định.
+
+- **poster (dành cho \`<video>\`):** Hiển thị một hình ảnh trong khi video đang tải hoặc trước khi người dùng nhấn play.
+
+### Phụ đề và Chú thích (\`<track>\`)
+
+**CỰC KỲ QUAN TRỌNG CHO KHẢ NĂNG TRUY CẬP.**
+
+Thẻ \`<track>\` được đặt bên trong \`<audio>\` hoặc \`<video>\` để liên kết đến các tệp văn bản có dấu thời gian (định dạng WebVTT - .vtt).
+
+- **Các loại (kind) phổ biến:**
+  - \`kind="subtitles"\`: Phụ đề dịch thuật lời thoại.
+  - \`kind="captions"\`: Phụ đề chi tiết, không chỉ bao gồm lời thoại mà còn cả các âm thanh quan trọng khác (ví dụ: "[tiếng cửa đóng sầm]"). Rất cần thiết cho người khiếm thính.
+  - \`kind="descriptions"\`: Mô tả bằng âm thanh về các nội dung hình ảnh trong video, dành cho người khiếm thị.
+
+## Bảng (Tables)
+
+Phần này giải thích cách sử dụng bảng HTML một cách đúng đắn và có ngữ nghĩa.
+
+### Khi nào nên dùng bảng?
+
+**Lưu ý quan trọng:**
+- Chỉ sử dụng thẻ \`<table>\` để hiển thị dữ liệu dạng bảng (tabular data) - loại dữ liệu có ý nghĩa khi được trình bày theo hàng và cột như trong một file Excel.
+- Không được dùng bảng cho mục đích dàn layout trang web. Thay vào đó hãy sử dụng CSS Flexbox hoặc Grid.
+
+### Cấu trúc bảng có ngữ nghĩa
+
+Một bảng đúng chuẩn nên có cấu trúc sau:
+
+- \`<table>\`: Thẻ bao bọc toàn bộ bảng.
+- \`<caption>\`: Bắt buộc phải có để cung cấp tiêu đề hoặc tên cho bảng. Đây là yếu tố quan trọng nhất cho khả năng truy cập của bảng. Nó phải là con trực tiếp đầu tiên của \`<table>\`.
+- \`<thead>\`: Nhóm phần đầu của bảng, thường chứa các hàng tiêu đề cột.
+- \`<tbody>\`: Nhóm phần thân của bảng, chứa các hàng dữ liệu chính.
+- \`<tfoot>\`: Nhóm phần chân của bảng, có thể chứa các hàng tổng kết.
+
+### Hàng và Ô
+
+- \`<tr>\` (Table Row): Định nghĩa một hàng trong bảng.
+- \`<th>\` (Table Header): Định nghĩa một ô tiêu đề. Nó có ý nghĩa ngữ nghĩa, cho biết đây là tiêu đề cho một hàng hoặc một cột.
+- \`<td>\` (Table Data): Định nghĩa một ô chứa dữ liệu thông thường.
+
+<table>
+  <caption>MLW Alumni</caption>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Destiny</th>
+      <th>Year</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Hal Gibrah</th>
+      <td>Calculator</td>
+      <td>2020</td>
+    </tr>
+    <tr>
+      <th>Cathy Terr</th>
+      <td>Waste disposal</td>
+      <td>2018</td>
+    </tr>
+    <tr>
+      <th>Lou Minious</th>
+      <td>Lightbulb</td>
+      <td>1956</td>
+    </tr>
+  </tbody>
+</table>
+
+### Khả năng truy cập với scope
+
+**Lưu ý quan trọng:**
+- Trên thẻ \`<th>\`, hãy sử dụng thuộc tính \`scope\` để chỉ định rõ ràng phạm vi của tiêu đề đó.
+- \`scope="col"\`: Tiêu đề này dành cho cả cột bên dưới nó.
+- \`scope="row"\`: Tiêu đề này dành cho cả hàng bên cạnh nó.
+- Việc này tạo ra một liên kết ngữ nghĩa rõ ràng, giúp trình đọc màn hình có thể thông báo cho người dùng biết ô dữ liệu này thuộc về tiêu đề nào.
+
+### Gộp ô (Merging Cells)
+
+- \`colspan="số"\`: Gộp một ô lại với các ô bên phải nó trên cùng một hàng.
+- \`rowspan="số"\`: Gộp một ô lại với các ô bên dưới nó trên các hàng khác nhau.
+
+**Cảnh báo:** Các bảng có cấu trúc phức tạp với nhiều ô bị gộp sẽ rất khó cho người dùng trình đọc màn hình để hiểu. Hãy cố gắng giữ cho bảng càng đơn giản càng tốt.
+<table class="border-collapse border border-gray-400">
+  <caption class="caption-side-top mb-2 font-semibold">MLW Alumni</caption>
+  <thead>
+    <tr>
+      <th rowspan="2" id="name" scope="col"
+          class="border border-gray-300 bg-gray-100 px-4 py-2">Name</th>
+      <th colspan="2" id="path" class="border border-gray-300 bg-gray-100 px-4 py-2">Career path</th>
+      <th rowspan="2" id="year" class="border border-gray-300 bg-gray-100 px-4 py-2">Year</th>
+    </tr>
+    <tr>
+      <th id="past" scope="col" class="border border-gray-300 bg-gray-100 px-4 py-2">Past</th>
+      <th id="future" scope="col" class="border border-gray-300 bg-gray-100 px-4 py-2">Destiny</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="hal" scope="row" class="border border-gray-300 px-4 py-2">Hal Gibrah</th>
+      <td headers="hal path past" class="border border-gray-300 px-4 py-2">Calculator</td>
+      <td headers="hal path future" class="border border-gray-300 px-4 py-2">Mars rover</td>
+      <td class="border border-gray-300 px-4 py-2">2020</td>
+    </tr>
+    <tr>
+      <th id="cathy" scope="row" class="border border-gray-300 px-4 py-2">Cathy Terr</th>
+      <td headers="cathy path past" class="border border-gray-300 px-4 py-2">Waste disposal</td>
+      <td headers="cathy path future" class="border border-gray-300 px-4 py-2">Automated teller</td>
+      <td class="border border-gray-300 px-4 py-2">2018</td>
+    </tr>
+    <tr>
+      <th id="lou" scope="row" class="border border-gray-300 px-4 py-2">Lou Minious</th>
+      <td headers="lou path past" class="border border-gray-300 px-4 py-2">Lightbulb</td>
+      <td headers="lou path future" class="border border-gray-300 px-4 py-2">Smart bulb</td>
+      <td class="border border-gray-300 px-4 py-2">1956</td>
+    </tr>
+  </tbody>
+</table>
+
+`;
 ---
+
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-        <ul class="list-disc pl-6">
-            <li>Images: Hiển thị hình ảnh (<code>&lt;img&gt;</code>).</li>
-            <li>Audio and Video: Phát âm thanh và video (<code>&lt;audio&gt;</code>, <code>&lt;video&gt;</code>).</li>
-            <li>Tables: Hiển thị dữ liệu dạng bảng, có hàng và cột (<code>&lt;table&gt;</code>).</li>
-        </ul>
-        
-    </ReadLayout>
+  <ReadLayout title="Nội dung nhúng và Đa phương tiện" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

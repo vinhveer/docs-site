@@ -1,57 +1,48 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+// Khai báo chuỗi Markdown
+const markdownContent = `# Tổng quan về HTML
+
+HTML (Ngôn ngữ đánh dấu Siêu văn bản) là ngôn ngữ chuẩn để mô tả cấu trúc của một trang web. Tài liệu HTML là một cây các phần tử (elements).
+
+### Phần tử (Element)
+
+Là đơn vị cấu trúc cơ bản, bao gồm **thẻ mở**, **nội dung**, và **thẻ đóng**.  
+Ví dụ: \`<p>nội dung</p>\` là một phần tử.
+
+### Thẻ (Tag)
+
+Là phần trong dấu ngoặc góc (\`<h1>\`, \`</h1>\`). Thẻ và phần tử là hai khái niệm khác nhau.
+
+### Lồng ghép (Nesting)
+
+Các phần tử có thể chứa các phần tử khác bên trong, nhưng phải được đóng đúng thứ tự (thẻ nào mở sau thì phải đóng trước).
+
+### Sự linh hoạt của trình duyệt
+
+Trình duyệt có thể tự sửa lỗi thiếu thẻ đóng (ví dụ \`<li>\`), nhưng việc này không được khuyến khích vì có thể gây ra lỗi hiển thị không mong muốn. Luôn đóng các thẻ bắt buộc như \`<script>\`, \`<style>\`, \`<textarea>\`.
+
+### Loại phần tử
+
+- **Phần tử không được thay thế (Non-replaced):** Là các phần tử có nội dung văn bản và thẻ con (ví dụ: \`<p>\`, \`<h1>\`).
+- **Phần tử được thay thế (Replaced):** Được trình duyệt thay thế bằng một đối tượng khác, như hình ảnh (\`<img>\`) hoặc điều khiển biểu mẫu (\`<input>\`).
+<input type="range" min="0" max="100" value="50" />
+- **Phần tử rỗng (Empty):** Là các phần tử tự đóng, không có thẻ đóng và không thể chứa nội dung (ví dụ: \`<img>\`, \`<br>\`, \`<meta>\`).
+
+### Thuộc tính (Attributes)
+
+Cung cấp thông tin bổ sung cho phần tử, được viết trong thẻ mở dưới dạng cặp \`tên="giá trị"\`. Thuộc tính quyết định hành vi và chức năng của phần tử. Luôn sử dụng dấu ngoặc kép cho giá trị thuộc tính để đảm bảo an toàn và dễ đọc.
+`;
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Tổng quan về HTML</h1>
-        <p>
-            HTML (Ngôn ngữ đánh dấu Siêu văn bản) là ngôn ngữ chuẩn để mô tả cấu
-            trúc của một trang web. Tài liệu HTML là một cây các phần tử
-            (elements).
-        </p>
-
-        <h3 class="heading-3">Phần tử (Element)</h3>
-        <p>
-            Là đơn vị cấu trúc cơ bản, bao gồm <b>thẻ mở</b>, <b>nội dung</b>,
-            và <b>thẻ đóng</b>.
-            <br />
-            Ví dụ: <code>&lt;p&gt;nội dung&lt;/p&gt;</code> là một phần tử.
-        </p>
-
-        <h3 class="heading-3">Thẻ (Tag)</h3>
-        <p>
-            Là phần trong dấu ngoặc góc (<code>&lt;h1&gt;</code>, <code
-                >&lt;/h1&gt;</code
-            >). Thẻ và phần tử là hai khái niệm khác nhau.
-        </p>
-
-        <h3 class="heading-3">Lồng ghép (Nesting)</h3>
-        <p>
-            Các phần tử có thể chứa các phần tử khác bên trong, nhưng phải được
-            đóng đúng thứ tự (thẻ nào mở sau thì phải đóng trước).
-        </p>
-
-        <h3 class="heading-3">Sự linh hoạt của trình duyệt</h3>
-        <p>
-            Trình duyệt có thể tự sửa lỗi thiếu thẻ đóng (ví dụ <code>&lt;li&gt;</code>
-            ), nhưng việc này không được khuyến khích vì có thể gây ra lỗi
-            hiển thị không mong muốn. Luôn đóng các thẻ bắt buộc như <code
-                >&lt;script&gt;</code
-            >, <code>&lt;style&gt;</code>, <code>&lt;textarea&gt;</code>.
-        </p>
-
-        <h3 class="heading-3">Loại phần tử</h3>
-        <ul class="list-disc pl-5">
-            <li><b>Phần tử không được thay thế (Non-replaced):</b> Là các phần tử có nội dung văn bản và thẻ con (ví dụ: <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code>).</li>
-            <li><b>Phần tử được thay thế (Replaced):</b> Được trình duyệt thay thế bằng một đối tượng khác, như hình ảnh (<code>&lt;img&gt;</code>) hoặc điều khiển biểu mẫu (<code>&lt;input&gt;</code>).</li>
-            <li><b>Phần tử rỗng (Empty):</b> Là các phần tử tự đóng, không có thẻ đóng và không thể chứa nội dung (ví dụ: <code>&lt;img&gt;</code>, <code>&lt;br&gt;</code>, <code>&lt;meta&gt;</code>).</li>
-        </ul>
-
-        <h3 class="heading-3">Thuộc tính (Attributes)</h3>
-        <p>Cung cấp thông tin bổ sung cho phần tử, được viết trong thẻ mở dưới dạng cặp <code>tên="giá trị"</code>. Thuộc tính quyết định hành vi và chức năng của phần tử. Luôn sử dụng dấu ngoặc kép cho giá trị thuộc tính để đảm bảo an toàn và dễ đọc.</p>
-    </ReadLayout>
+  <ReadLayout title="Tổng quan HTML" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

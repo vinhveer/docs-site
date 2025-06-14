@@ -1,18 +1,144 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Nội dung chính
+
+- Animations: Tạo hoạt ảnh phức tạp với các keyframe.
+- Transitions: Tạo hiệu ứng chuyển đổi mượt mà giữa các trạng thái.
+- Filters: Áp dụng các hiệu ứng đồ họa (ví dụ: làm mờ, độ tương phản).
+- Blend Modes: Xác định cách hai lớp nội dung hòa trộn vào nhau.
+
 ---
 
+### **Phần 1: Hoạt ảnh (Animations)**
+(Tóm tắt từ The CSS Podcast - 022: Animation)
+
+Hoạt ảnh CSS cho phép bạn tạo ra các chuỗi chuyển động phức tạp với nhiều bước, được kiểm soát qua các khung hình chính (keyframes).
+
+#### **\`@keyframes\` - Khung hình chính**
+
+\`@keyframes\` là quy tắc dùng để định nghĩa các bước của một hoạt ảnh. Bạn đặt cho nó một cái tên (custom identifier) và sau đó định nghĩa các trạng thái tại các mốc thời gian khác nhau (sử dụng \`%\` hoặc từ khóa \`from\` cho 0% và \`to\` cho 100%).
+
+\`\`\`css
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+\`\`\`
+
+#### **Các thuộc tính \`animation\`**
+
+Để áp dụng \`@keyframes\` cho một phần tử, bạn sử dụng các thuộc tính \`animation-*\`:
+
+* **\`animation-name\`**: Tên của \`@keyframes\` mà bạn muốn sử dụng.
+* **\`animation-duration\`**: Thời gian để hoàn thành một chu kỳ hoạt ảnh (ví dụ: \`2s\`, \`500ms\`).
+* **\`animation-timing-function\`**: Điều khiển tốc độ của hoạt ảnh qua các đường cong (ví dụ: \`linear\`, \`ease\`, \`ease-in-out\`) hoặc các bước rời rạc (\`steps()\`).
+* **\`animation-iteration-count\`**: Số lần lặp lại hoạt ảnh. Dùng \`infinite\` để lặp lại vô hạn.
+* **\`animation-direction\`**: Hướng chạy của hoạt ảnh (\`normal\`, \`reverse\`, \`alternate\`).
+* **\`animation-delay\`**: Thời gian chờ trước khi bắt đầu hoạt ảnh.
+* **\`animation-play-state\`**: Cho phép tạm dừng (\`paused\`) và tiếp tục (\`running\`) hoạt ảnh.
+* **\`animation-fill-mode\`**: Xác định style của phần tử sẽ được giữ lại trước khi bắt đầu hoặc sau khi kết thúc hoạt ảnh (\`forwards\`, \`backwards\`, \`both\`).
+
+**Thuộc tính viết tắt \`animation\`**:
+Bạn có thể gộp tất cả các thuộc tính trên vào một dòng.
+\`animation: pulse 2s ease-in-out infinite;\`
+
+**Lưu ý về khả năng tiếp cận**:
+Sử dụng media query \`prefers-reduced-motion\` để giảm hoặc tắt các hoạt ảnh cho những người dùng đã cài đặt tùy chọn này trên hệ điều hành của họ.
+
+---
+
+### **Phần 2: Chuyển đổi (Transitions)**
+(Tóm tắt từ The CSS Podcast - 044: Transitions)
+
+Transitions tạo ra sự chuyển đổi mượt mà giữa trạng thái ban đầu và trạng thái cuối cùng của một phần tử, thường được kích hoạt bởi tương tác của người dùng (ví dụ: \`:hover\`). Nó đơn giản hơn animation, chỉ xử lý chuyển đổi giữa hai trạng thái.
+
+#### **Các thuộc tính \`transition\`**
+
+* **\`transition-property\`**: Xác định thuộc tính CSS nào sẽ được áp dụng hiệu ứng chuyển đổi (ví dụ: \`background-color\`, \`transform\`, hoặc \`all\` cho tất cả).
+* **\`transition-duration\`**: Thời gian để hoàn thành quá trình chuyển đổi.
+* **\`transition-timing-function\`**: Tốc độ của quá trình chuyển đổi (tương tự như trong animation).
+* **\`transition-delay\`**: Thời gian chờ trước khi bắt đầu chuyển đổi.
+
+**Thuộc tính viết tắt \`transition\`**:
+\`transition: transform 300ms ease-in-out;\`
+
+#### **Những điều cần biết về Transitions**
+
+* **Trình kích hoạt (Triggers)**: Transitions cần một sự thay đổi trạng thái để được kích hoạt, thường là qua các lớp giả như \`:hover\`, \`:focus\`, \`:active\`, hoặc thay đổi class bằng JavaScript.
+* **Hiệu ứng vào/ra khác nhau**: Bạn có thể tạo hiệu ứng thú vị bằng cách định nghĩa một \`transition\` trên trạng thái mặc định (cho hiệu ứng "ra") và một \`transition\` khác trên trạng thái \`:hover\` (cho hiệu ứng "vào").
+* **Hiệu suất**: Để có hiệu ứng mượt mà, nên ưu tiên chuyển đổi các thuộc tính được tăng tốc bởi GPU như \`transform\` và \`opacity\`, thay vì các thuộc tính gây ảnh hưởng đến layout như \`width\`, \`height\`.
+
+---
+
+### **Phần 3: Bộ lọc (Filters)**
+(Tóm tắt từ The CSS Podcast - 023: Filters)
+
+Thuộc tính \`filter\` cho phép bạn áp dụng các hiệu ứng đồ họa lên một phần tử, tương tự như các bộ lọc trong Photoshop.
+
+#### **Các hàm lọc phổ biến**
+
+* \`blur(radius)\`: Làm mờ Gaussian.
+* \`brightness(percentage)\`: Điều chỉnh độ sáng.
+* \`contrast(percentage)\`: Điều chỉnh độ tương phản.
+* \`grayscale(percentage)\`: Chuyển ảnh sang thang độ xám.
+* \`invert(percentage)\`: Đảo ngược màu sắc.
+* \`opacity(percentage)\`: Thay đổi độ trong suốt.
+* \`saturate(percentage)\`: Điều chỉnh độ bão hòa màu.
+* \`sepia(percentage)\`: Thêm hiệu ứng tông màu nâu đỏ cổ điển.
+* \`hue-rotate(angle)\`: Xoay sắc độ trên vòng tròn màu.
+* \`drop-shadow(...)\`: Tạo bóng đổ theo hình dạng thực tế của nội dung (hữu ích cho ảnh PNG trong suốt).
+
+#### **\`backdrop-filter\`**
+
+Đây là một thuộc tính liên quan nhưng rất khác biệt.
+
+* \`filter\`: Áp dụng hiệu ứng lên **toàn bộ phần tử**.
+* \`backdrop-filter\`: Chỉ áp dụng hiệu ứng lên **vùng nền phía sau** của phần tử.
+
+Đây là chìa khóa để tạo ra hiệu ứng "kính mờ" (frosted glass), nơi nền bị làm mờ nhưng văn bản bên trên vẫn sắc nét.
+
+---
+
+### **Phần 4: Chế độ hòa trộn (Blend Modes)**
+(Tóm tắt từ The CSS Podcast - 024: Blend Modes)
+
+Chế độ hòa trộn xác định cách màu sắc của một phần tử (lớp trên) hòa trộn với các lớp nằm phía sau nó, tạo ra các hiệu ứng hình ảnh độc đáo.
+
+#### **Hai thuộc tính chính**
+
+* **\`mix-blend-mode\`**: Áp dụng chế độ hòa trộn cho **toàn bộ phần tử** với các phần tử nằm dưới nó.
+* **\`background-blend-mode\`**: Chỉ áp dụng để hòa trộn **nhiều lớp ảnh nền** trên cùng một phần tử với nhau.
+
+#### **Các chế độ hòa trộn phổ biến**
+
+* **\`multiply\`**: Giống như xếp chồng các tấm phim trong suốt, thường làm cho kết quả tối hơn. Màu trắng trở nên trong suốt.
+* **\`screen\`**: Ngược lại với \`multiply\`, thường làm cho kết quả sáng hơn. Màu đen trở nên trong suốt.
+* **\`overlay\`**: Kết hợp giữa \`multiply\` và \`screen\`, làm tăng độ tương phản.
+* **\`darken\`**: So sánh màu của hai lớp và chọn ra màu tối hơn.
+* **\`lighten\`**: Ngược lại với \`darken\`, chọn ra màu sáng hơn.
+* **\`difference\`**: Lấy hiệu số của các giá trị màu, tạo hiệu ứng giống như phim âm bản.
+* **\`hue\` / \`saturation\` / \`color\` / \`luminosity\`**: Các chế độ này lấy một thành phần màu cụ thể (sắc độ, độ bão hòa, màu, độ sáng) từ lớp trên và áp dụng nó cho các thành phần còn lại của lớp dưới.
+
+#### **Thuộc tính \`isolation\`**
+
+Khi bạn đặt \`isolation: isolate;\` cho một phần tử, nó sẽ tạo ra một ngữ cảnh xếp chồng mới. Điều này sẽ "cô lập" phần tử đó, ngăn nó hòa trộn với các lớp nền bên ngoài, nhưng các phần tử con bên trong nó vẫn có thể hòa trộn với nhau.`;
+---
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        <ul>
-            <li>Animations: Tạo hoạt ảnh phức tạp với các keyframe.</li>
-            <li>Transitions: Tạo hiệu ứng chuyển đổi mượt mà giữa các trạng thái.</li>
-            <li>Filters: Áp dụng các hiệu ứng đồ họa (ví dụ: làm mờ, độ tương phản).</li>
-            <li>Blend Modes: Xác định cách hai lớp nội dung hòa trộn vào nhau.</li>
-        </ul>
-    </ReadLayout>
+  <ReadLayout links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

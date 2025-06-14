@@ -1,22 +1,368 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Nội dung chính
+
+- Color: Định dạng màu sắc.
+- Borders: Tạo và định dạng đường viền.
+- Shadows: Thêm hiệu ứng đổ bóng cho văn bản và hộp.
+- Gradients: Tạo dải màu chuyển tiếp.
+- Backgrounds: Tùy chỉnh nền của phần tử.
+- Text and typography: Định dạng văn bản và phông chữ.
+- Lists: Tạo kiểu cho danh sách.
+
+### **Phần 1: Màu sắc (Color)**
+(Tóm tắt từ The CSS Podcast - 006: Color)
+
+Màu sắc là một phần không thể thiếu của trang web. CSS cung cấp nhiều cách để định nghĩa và sử dụng màu.
+
+#### **Màu số (Numeric Colors)**
+
+Đây là cách phổ biến nhất để định nghĩa màu trong CSS.
+
+* **Màu Hex (Hexadecimal)**:
+    * Là cách viết tắt cho màu RGB, sử dụng hệ cơ số 16 (0-9 và A-F).
+    * **Cú pháp**: \`#RRGGBB\` (ví dụ: \`#b71540\`).
+    * **Thêm độ trong suốt (Alpha)**: Thêm 2 ký tự hex vào cuối (\`#RRGGBBAA\`). Ví dụ, màu đen 50% trong suốt là \`#00000080\`.
+    * **Viết tắt**: Có thể dùng 3 ký tự nếu mỗi cặp RR, GG, BB giống nhau. Ví dụ, \`#a4e\` tương đương với \`#aa44ee\`.
+
+* **Màu RGB (Red, Green, Blue)**:
+    * Được định nghĩa bằng hàm \`rgb()\`.
+    * **Cú pháp**: \`rgb(183, 21, 64)\` hoặc \`rgb(183 21 64)\`. Giá trị từ 0-255.
+    * **Thêm độ trong suốt**: Dùng dấu \`/\` trong hàm \`rgb()\` hoặc dùng hàm \`rgba()\`.
+        * \`rgb(0 0 0 / 50%)\` hoặc \`rgb(0 0 0 / 0.5)\`
+        * \`rgba(0, 0, 0, 0.5)\` (hỗ trợ trình duyệt cũ tốt hơn).
+
+* **Màu HSL (Hue, Saturation, Lightness - Sắc độ, Độ bão hòa, Độ sáng)**:
+    * Là một cách định nghĩa màu trực quan hơn.
+    * **Hue (Sắc độ)**: Giá trị trên vòng tròn màu (0-360 độ).
+    * **Saturation (Độ bão hòa)**: Độ "tươi" của màu (0-100%).
+    * **Lightness (Độ sáng)**: Thang độ sáng từ đen đến trắng (0-100%).
+    * **Thêm độ trong suốt**: Tương tự RGB, dùng \`hsl()\` với dấu \`/\` hoặc hàm \`hsla()\`.
+
+#### **Từ khóa màu (Color Keywords)**
+
+* **Màu được đặt tên**: CSS có 148 màu được đặt tên bằng tiếng Anh như \`black\`, \`white\`, \`red\`, \`goldenrod\`.
+* **Từ khóa đặc biệt**:
+    * \`transparent\`: Màu trong suốt hoàn toàn.
+    * \`currentColor\`: Một từ khóa động, nó sẽ lấy giá trị đã được tính toán của thuộc tính \`color\` của chính phần tử đó. Rất hữu ích để làm cho màu viền hoặc màu nền phù hợp với màu chữ một cách tự động.
+
+---
+
+### **Phần 2: Viền (Borders)**
+(Tóm tắt từ The CSS Podcast - 016: Borders)
+
+Viền là "khung tranh" của các hộp trong CSS, và bạn có rất nhiều tùy chọn để tạo kiểu cho nó.
+
+#### **Các thuộc tính cơ bản của viền**
+
+Để viền hiển thị, bạn cần định nghĩa \`border-style\`. Các thuộc tính chính bao gồm:
+
+* \`border-width\`: Độ dày của viền (ví dụ: \`1px\`, \`medium\`, \`thick\`).
+* \`border-style\`: Kiểu của viền (\`solid\`, \`dotted\`, \`dashed\`, \`double\`, \`groove\`, \`ridge\`, \`inset\`, \`outset\`).
+* \`border-color\`: Màu của viền (mặc định là \`currentColor\`).
+
+**Thuộc tính viết tắt:**
+Bạn có thể định nghĩa tất cả trong một dòng với thứ tự: \`width\`, \`style\`, \`color\`.
+\`border: 1px solid red;\`
+
+#### **Bán kính viền (\`border-radius\`)**
+
+Dùng để bo tròn các góc của một hộp.
+
+* \`border-radius: 1em;\` (áp dụng cho cả 4 góc).
+* Bạn có thể chỉ định bán kính cho từng góc riêng lẻ.
+* **Góc elip**: Bạn có thể tạo góc hình elip thay vì hình tròn bằng cách cung cấp hai giá trị cho một góc (\`border-top-left-radius: 1em 2em;\`) hoặc dùng cú pháp \`/\` trong thuộc tính viết tắt (\`border-radius: 1em / 2em;\`).
+
+#### **Ảnh viền (\`border-image\`)**
+
+Thay vì dùng đường viền đơn sắc, bạn có thể dùng một hình ảnh (hoặc gradient) làm viền.
+
+* \`border-image-source\`: Nguồn ảnh (dùng \`url()\` hoặc một gradient).
+* \`border-image-slice\`: "Cắt" hình ảnh nguồn thành 9 phần (4 góc, 4 cạnh, và phần giữa) để áp dụng cho viền.
+* \`border-image-repeat\`: Xác định cách các cạnh của ảnh được lặp lại (\`stretch\`, \`repeat\`, \`round\`, \`space\`).
+
+---
+
+### **Phần 3: Bóng (Shadows)**
+(Tóm tắt từ The CSS Podcast - 017: Shadows)
+
+CSS cung cấp nhiều cách để tạo hiệu ứng bóng cho các phần tử.
+
+#### **\`box-shadow\`**
+
+Tạo bóng cho **hộp** của một phần tử.
+
+* **Cú pháp**: \`box-shadow: <offset-x> <offset-y> <blur-radius> <spread-radius> <color>;\`
+    * \`offset-x\` & \`offset-y\`: Độ dịch chuyển của bóng theo chiều ngang và dọc.
+    * \`blur-radius\`: Bán kính làm mờ, giá trị càng lớn bóng càng nhòe.
+    * \`spread-radius\` (tùy chọn): Bán kính lan tỏa, làm bóng lớn hơn hoặc nhỏ hơn.
+    * \`inset\` (tùy chọn): Thêm từ khóa này vào đầu để tạo bóng **bên trong** hộp.
+* Bạn có thể tạo nhiều lớp bóng bằng cách liệt kê chúng, cách nhau bởi dấu phẩy.
+
+#### **\`text-shadow\`**
+
+Tương tự \`box-shadow\` nhưng chỉ áp dụng cho **văn bản**.
+
+* Cú pháp gần giống, nhưng **không có** \`spread-radius\` và \`inset\`.
+* Một đặc điểm thú vị là bóng văn bản không bị cắt xén, nên nó có thể hiển thị xuyên qua văn bản nếu văn bản có độ trong suốt.
+
+#### **\`filter: drop-shadow()\`**
+
+Đây là giải pháp để tạo bóng cho các hình ảnh có hình dạng không phải hình chữ nhật (ví dụ: ảnh PNG trong suốt).
+
+* \`drop-shadow()\` tạo ra một bóng dựa trên **hình dạng thực tế** của nội dung (alpha mask), chứ không phải hộp bao quanh nó.
+* Cú pháp giá trị tương tự \`box-shadow\` nhưng cũng **không có** \`spread\` và \`inset\`.
+
+---
+
+### **Phần 4: Gradient (Màu chuyển sắc)**
+(Tóm tắt từ The CSS Podcast - 021: Gradients)
+
+Gradient là một loại **hình ảnh** được tạo ra bằng mã CSS, cho phép bạn tạo ra sự chuyển đổi mượt mà giữa hai hoặc nhiều màu.
+
+#### **\`linear-gradient()\` (Chuyển sắc tuyến tính)**
+
+Tạo ra một dải màu chuyển đổi theo một đường thẳng.
+
+* **Cú pháp**: \`linear-gradient(direction, color-stop1, color-stop2, ...);\`
+* \`direction\`: Hướng chuyển đổi, có thể là một góc (\`45deg\`) hoặc một từ khóa (\`to right\`, \`to bottom left\`).
+* \`color-stop\`: Một điểm màu, có thể đi kèm vị trí (ví dụ: \`red 30%\`).
+
+#### **\`radial-gradient()\` (Chuyển sắc tỏa tròn)**
+
+Tạo ra một dải màu tỏa ra từ một điểm trung tâm.
+
+* **Cú pháp**: \`radial-gradient(shape size at position, color-stop1, ...);\`
+* \`shape\`: Hình dạng (\`circle\` hoặc \`ellipse\`).
+* \`position\`: Vị trí của tâm.
+* \`size\`: Kích thước của gradient (\`closest-side\`, \`farthest-corner\`).
+
+#### **\`conic-gradient()\` (Chuyển sắc hình nón)**
+
+Tạo ra một dải màu xoay quanh một điểm trung tâm, giống như một biểu đồ hình tròn.
+
+* **Cú pháp**: \`conic-gradient(from angle at position, color-stop1, ...);\`
+* Hữu ích để tạo các hiệu ứng như bánh xe màu hoặc biểu đồ tròn.
+
+#### **Lặp lại và Trộn lẫn Gradient**
+
+* **Repeating Gradients**: Mỗi loại gradient đều có phiên bản lặp lại: \`repeating-linear-gradient()\`, \`repeating-radial-gradient()\`, \`repeating-conic-gradient()\`. Chúng sẽ lặp lại mẫu gradient mà bạn đã định nghĩa để lấp đầy không gian.
+* **Trộn lẫn**: Bạn có thể xếp chồng nhiều lớp gradient lên nhau trong cùng một thuộc tính \`background\` bằng cách phân tách chúng bằng dấu phẩy, giống như xếp chồng các ảnh nền.
+
+---
+
+### **Phần 5: Nền (Backgrounds)**
+
+Mỗi hộp trong CSS đều có một lớp nền chuyên dụng nằm phía sau nội dung. CSS cung cấp nhiều thuộc tính để tùy chỉnh lớp nền này, bao gồm cả việc sử dụng nhiều ảnh nền cùng lúc.
+
+#### **Màu nền (Background Color) 🎨**
+
+Thuộc tính đơn giản nhất là \`background-color\`. Giá trị mặc định của nó là \`transparent\`, cho phép nền của phần tử cha hiển thị qua. Một màu nền hợp lệ sẽ nằm sau tất cả các nội dung khác của phần tử.
+
+\`\`\`css
+.my-element {
+  background-color: #A6C6D2;
+}
+\`\`\`
+
+#### **Ảnh nền (Background Image) 🖼️**
+
+Bạn có thể thêm một hoặc nhiều ảnh nền lên trên lớp màu nền bằng thuộc tính \`background-image\`. Thuộc tính này chấp nhận:
+* Một URL hình ảnh qua hàm \`url()\`.
+* Một hình ảnh được tạo động bởi các hàm **gradient** của CSS (ví dụ: \`linear-gradient()\`).
+
+#### **Lặp lại nền (Background Repeat)**
+
+Theo mặc định, ảnh nền sẽ tự động lặp lại theo cả chiều ngang và chiều dọc để lấp đầy toàn bộ không gian. Bạn có thể thay đổi hành vi này bằng thuộc tính \`background-repeat\`.
+
+* **\`repeat\`**: Lặp lại ảnh, có thể cắt xén nếu không vừa.
+* **\`no-repeat\`**: Không lặp lại, ảnh chỉ hiển thị một lần.
+* **\`round\`**: Lặp lại và co giãn ảnh để vừa khít mà không bị cắt xén.
+* **\`space\`**: Lặp lại ảnh mà không cắt xén, tự động thêm khoảng trắng đều giữa các ảnh.
+* Bạn cũng có thể chỉ định lặp lại theo một trục duy nhất với \`repeat-x\` (chỉ lặp ngang) và \`repeat-y\` (chỉ lặp dọc).
+
+#### **Vị trí nền (Background Position)**
+
+Vị trí ban đầu của ảnh nền là ở góc trên cùng bên trái (\`top left\`). Bạn có thể thay đổi điều này bằng \`background-position\`.
+
+* **Hai giá trị**: Giá trị đầu tiên cho trục X (ngang), giá trị thứ hai cho trục Y (dọc). Có thể dùng từ khóa (\`top\`, \`left\`, \`center\`, \`right\`, \`bottom\`) hoặc các giá trị độ dài/phần trăm (\`50%\`, \`100px\`).
+* **Một giá trị**: Giá trị được chỉ định sẽ được áp dụng cho trục X, và giá trị còn lại sẽ mặc định là \`center\` (hoặc 50%).
+* **Cú pháp 3 hoặc 4 giá trị**: Cho phép bạn tạo ra một khoảng cách (offset) từ một cạnh cụ thể. Ví dụ: \`background-position: bottom 20px right 30px;\` sẽ đặt ảnh cách cạnh dưới 20px và cách cạnh phải 30px.
+
+#### **Kích thước nền (Background Size)**
+
+Thuộc tính \`background-size\` dùng để kiểm soát kích thước của ảnh nền.
+
+* **\`auto\`**: (Mặc định) Giữ nguyên kích thước gốc của ảnh.
+* **\`cover\`**: Phóng to hoặc thu nhỏ ảnh để **phủ kín toàn bộ** vùng nền, chấp nhận việc ảnh có thể bị cắt xén một phần.
+* **\`contain\`**: Phóng to hoặc thu nhỏ ảnh để **hiển thị toàn bộ** ảnh bên trong vùng nền mà không bị méo hay cắt, chấp nhận việc có thể để lại khoảng trống.
+* Bạn cũng có thể dùng các giá trị độ dài (\`200px\`) hoặc phần trăm (\`50%\`) để đặt kích thước cụ thể.
+
+#### **Các thuộc tính nền khác**
+
+* **\`background-attachment\`**: Kiểm soát hành vi cuộn của ảnh nền.
+    * **\`scroll\`** (Mặc định): Nền cuộn cùng với trang.
+    * **\`fixed\`**: Nền đứng yên so với khung nhìn (viewport), tạo hiệu ứng parallax.
+    * **\`local\`**: Nền cuộn cùng với nội dung *bên trong* phần tử đó (nếu chính phần tử đó có thanh cuộn).
+
+* **\`background-origin\`**: Xác định vùng **bắt đầu vẽ** của nền. Các giá trị tương ứng với các vùng của box model:
+    * \`border-box\`
+    * \`padding-box\` (Mặc định)
+    * \`content-box\`
+
+* **\`background-clip\`**: Xác định vùng **hiển thị** của nền (cắt bỏ phần nền nằm ngoài vùng này). Ngoài các giá trị trên, nó còn có giá trị đặc biệt:
+    * **\`text\`**: Cắt xén nền theo hình dạng của chính văn bản bên trong, tạo hiệu ứng chữ có nền ảnh. (Yêu cầu \`color\` của chữ phải trong suốt).
+
+#### **Nhiều nền (Multiple Backgrounds) 🏙️**
+
+CSS cho phép bạn xếp chồng nhiều lớp nền lên nhau. Chúng được định nghĩa bằng cách dùng dấu phẩy để ngăn cách các giá trị trong các thuộc tính nền.
+
+* **Thứ tự xếp lớp**: Nền được khai báo **đầu tiên** sẽ nằm ở lớp **trên cùng** (gần người dùng nhất).
+* **Lưu ý quan trọng**: Chỉ có lớp nền **cuối cùng** trong danh sách mới có thể được gán \`background-color\`. Đây là một kỹ thuật dự phòng (fallback) rất quan trọng trong trường hợp các ảnh nền phía trên không tải được.
+
+\`\`\`css
+.my-element {
+  background-image: url("fg.png"), url("bg.png");
+  background-size: contain, cover;
+  background-repeat: no-repeat, no-repeat;
+  background-color: #A6C6D2; /* Chỉ áp dụng cho lớp nền cuối cùng */
+}
+\`\`\`
+
+#### **Thuộc tính viết tắt \`background\` 📜**
+
+Để thuận tiện, bạn có thể định nghĩa tất cả các thuộc tính trên trong một thuộc tính viết tắt \`background\`.
+
+* **Thứ tự rất quan trọng**.
+* **Cú pháp đặc biệt**: \`background-position\` và \`background-size\` phải đi cùng nhau và được phân tách bằng dấu gạch chéo (\`/\`).
+* Ví dụ:
+
+\`\`\`css
+.my-element {
+  background:
+    url("fg.png") 50% 50% / contain no-repeat, /* Lớp trên */
+    url("bg.png") center / cover,              /* Lớp giữa */
+    #A6C6D2;                                  /* Lớp cuối cùng với màu nền */
+}
+\`\`\`
+
+---
+
+### **Phần 6: Văn bản & Kiểu chữ (Text & Typography)**
+(Tóm tắt từ The CSS Podcast - 036: Text & Typography)
+
+Văn bản là một trong những thành phần cốt lõi của web. Việc tùy chỉnh kiểu chữ có thể cải thiện đáng kể trải nghiệm đọc của người dùng.
+
+#### **\`@font-face\` - Tải font tùy chỉnh**
+
+Quy tắc \`@font-face\` cho phép bạn nhúng các file font tùy chỉnh vào trang web của mình, giúp bạn thoát khỏi sự phụ thuộc vào các font đã được cài đặt trên máy người dùng.
+
+* **Cú pháp cơ bản**:
+    \`\`\`css
+    @font-face {
+      font-family: "MyCustomFont"; /* Đặt tên cho font của bạn */
+      src: local("MyCustomFont"), /* Ưu tiên tìm font trên máy người dùng trước */
+           url("path/to/myfont.woff2") format("woff2"); /* Nếu không có, tải từ server */
+    }
+    \`\`\`
+* **Sự khác biệt giữa \`@font-face\` và \`font-family\`**:
+    * \`@font-face\`: Là một **quy tắc để khai báo** một font chữ tùy chỉnh, đặt tên cho nó và chỉ cho trình duyệt nơi để tải về.
+    * \`font-family\`: Là một **thuộc tính để áp dụng** một font chữ (đã được khai báo hoặc font hệ thống) cho một phần tử HTML.
+
+#### **Các thuộc tính Font cơ bản**
+
+* **\`font-family\`**: Thiết lập kiểu chữ. Bạn nên cung cấp một danh sách các font (font stack), cách nhau bởi dấu phẩy, và kết thúc bằng một họ font chung (generic family) như \`serif\` hoặc \`sans-serif\` để dự phòng.
+    \`font-family: "Open Sans", Arial, sans-serif;\`
+* **\`font-style\`**: Đặt chữ thành dạng in nghiêng.
+    * \`italic\`: Sử dụng phiên bản chữ nghiêng được thiết kế riêng của font.
+    * \`oblique\`: Làm nghiêng phiên bản chữ thường một cách nhân tạo.
+* **\`font-weight\`**: Thiết lập độ đậm của chữ. Có thể dùng từ khóa (\`normal\` tương đương \`400\`, \`bold\` tương đương \`700\`) hoặc giá trị số từ \`100\` đến \`900\`.
+* **\`font-size\`**: Kiểm soát kích thước của chữ. Có thể dùng các đơn vị tuyệt đối (\`px\`), tương đối (\`em\`, \`rem\`), hoặc từ khóa.
+    * **Lưu ý**: \`em\` tương đối với \`font-size\` của phần tử cha, trong khi \`rem\` tương đối với \`font-size\` của phần tử gốc (\`<html>\`).
+* **\`line-height\`**: Thiết lập chiều cao của mỗi dòng văn bản. **Thực hành tốt nhất** là sử dụng một giá trị số không có đơn vị (ví dụ: \`1.5\`) để nó luôn tương đối với \`font-size\`.
+
+#### **Các thuộc tính định dạng văn bản**
+
+* **\`letter-spacing\`**: Thay đổi khoảng cách giữa các ký tự.
+* **\`word-spacing\`**: Thay đổi khoảng cách giữa các từ.
+* **\`text-transform\`**: Thay đổi cách viết hoa (\`uppercase\`, \`lowercase\`, \`capitalize\`).
+* **\`text-decoration\`**: Thêm các đường trang trí như \`underline\` (gạch chân), \`overline\` (gạch trên), \`line-through\` (gạch ngang).
+* **\`text-align\`**: Căn chỉnh văn bản theo chiều ngang (\`left\`, \`right\`, \`center\`, \`justify\`). Nên sử dụng các giá trị logic \`start\` và \`end\` để hỗ trợ các ngôn ngữ có hướng viết khác nhau.
+* **\`text-indent\`**: Thụt lề cho dòng đầu tiên của một khối văn bản.
+* **\`text-shadow\`**: Thêm bóng cho văn bản.
+* **\`white-space\`**: Kiểm soát cách xử lý khoảng trắng và xuống dòng. \`white-space: pre\` hữu ích để hiển thị mã nguồn hoặc ASCII art.
+* **\`word-break: break-all\`**: Cho phép trình duyệt ngắt một từ dài ở bất kỳ ký tự nào để tránh tràn ra ngoài hộp chứa.
+
+#### **Hướng và luồng văn bản**
+
+* **\`direction\`**: Đặt hướng văn bản (\`ltr\` - trái sang phải, hoặc \`rtl\` - phải sang trái). **Lưu ý**: Nên ưu tiên sử dụng thuộc tính \`dir\` trong HTML để đảm bảo tính ngữ nghĩa.
+* **\`writing-mode\`**: Thay đổi luồng văn bản, ví dụ như để văn bản chạy theo chiều dọc (\`vertical-rl\`).
+
+#### **Font biến đổi (Variable Fonts)**
+
+Đây là một loại font hiện đại cho phép chứa nhiều biến thể khác nhau (đậm, nghiêng, hẹp, rộng...) trong cùng một file duy nhất, mang lại sự linh hoạt cao và tối ưu hóa hiệu suất.
+
+#### **Phần tử giả (Pseudo-elements) liên quan đến văn bản**
+
+* \`::first-letter\`: Chọn ký tự đầu tiên.
+* \`::first-line\`: Chọn dòng đầu tiên.
+* \`::selection\`: Tạo kiểu cho phần văn bản được người dùng bôi đen.
+
+---
+
+### **Phần 7: Danh sách (Lists)**
+(Tóm tắt từ The CSS Podcast - 030: Lists)
+
+HTML cung cấp các thẻ ngữ nghĩa để tạo danh sách, và CSS cung cấp các công cụ để tạo kiểu cho chúng.
+
+#### **Các loại danh sách (HTML)**
+
+* **\`<ul>\` (Unordered List)**: Danh sách không có thứ tự, các mục con \`<li>\` mặc định có dấu đầu dòng (bullet).
+* **\`<ol>\` (Ordered List)**: Danh sách có thứ tự, các mục con \`<li>\` mặc định được đánh số.
+* **\`<dl>\` (Description List)**: Danh sách mô tả, bao gồm các cặp \`<dt>\` (thuật ngữ) và \`<dd>\` (mô tả).
+
+#### **Thuộc tính \`list-style\`**
+
+Đây là cách truyền thống để tạo kiểu cho dấu đầu dòng (marker) của danh sách, áp dụng cho thẻ \`<ul>\` hoặc \`<ol>\`.
+
+* \`list-style-type\`: Thay đổi kiểu của dấu đầu dòng (\`disc\`, \`circle\`, \`square\`, \`decimal\`, \`lower-roman\`, \`none\`...).
+* \`list-style-position\`: Vị trí của dấu đầu dòng.
+    * \`outside\` (mặc định): Dấu đầu dòng nằm bên ngoài nội dung của mục.
+    * \`inside\`: Dấu đầu dòng nằm bên trong, cùng hàng với nội dung.
+* \`list-style-image\`: Sử dụng một hình ảnh làm dấu đầu dòng.
+* **\`list-style\` (viết tắt)**: Gộp các thuộc tính trên. Một ứng dụng phổ biến là \`list-style: none;\` để loại bỏ hoàn toàn dấu đầu dòng mặc định.
+
+#### **Phần tử giả \`::marker\`**
+
+Đây là cách **hiện đại và mạnh mẽ hơn** để tạo kiểu cho dấu đầu dòng. Nó cho phép bạn nhắm trực tiếp vào dấu đầu dòng do trình duyệt tạo ra.
+
+\`\`\`css
+li::marker {
+  color: red;
+  font-size: 1.2em;
+  content: "→ "; /* Thay đổi nội dung của dấu đầu dòng */
+}
+\`\`\`
+
+**Lưu ý**: \`::marker\` chỉ chấp nhận một số thuộc tính CSS nhất định như \`color\`, \`content\`, và các thuộc tính \`font-*\`.
+
+#### **\`display: list-item\`**
+
+Các phần tử \`<li>\` có thể hiển thị dấu đầu dòng vì chúng có \`display: list-item\` làm giá trị mặc định. Bạn có thể áp dụng giá trị này cho các phần tử khác (ví dụ như một thẻ \`<h1>\`) để chúng cũng có dấu đầu dòng.
+
+**Cảnh báo về khả năng tiếp cận (Accessibility Warning):**
+Việc thay đổi giao diện của một phần tử thành dạng danh sách bằng \`display: list-item\` **không** làm cho nó trở thành một danh sách về mặt ngữ nghĩa. Các công nghệ hỗ trợ (như trình đọc màn hình) sẽ không nhận diện nó là danh sách. **Luôn luôn ưu tiên sử dụng các thẻ HTML ngữ nghĩa (\`<ul>\`, \`<ol>\`, \`<li>\`) khi nội dung của bạn thực sự là một danh sách.**
+`;
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        <ul class="list-disc pl-6">
-            <li>Color: Định dạng màu sắc.</li>
-            <li>Borders: Tạo và định dạng đường viền.</li>
-            <li>Shadows: Thêm hiệu ứng đổ bóng cho văn bản và hộp.</li>
-            <li>Gradients: Tạo dải màu chuyển tiếp.</li>
-            <li>Backgrounds: Tùy chỉnh nền của phần tử.</li>
-            <li>Text and typography: Định dạng văn bản và phông chữ.</li>
-            <li>Lists: Tạo kiểu cho danh sách.</li>
-        </ul>
-        
-    </ReadLayout>
+  <ReadLayout links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

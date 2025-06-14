@@ -1,13 +1,169 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Hàm và Từ khóa this
+
+## Phần 1: Khái niệm cơ bản về Hàm (Function Basics)
+
+**Hàm (Function)** là một khối mã có thể tái sử dụng, được dùng để thực hiện một tập hợp các tác vụ liên quan. Trong JavaScript, hàm là các đối tượng "hạng nhất" (first-class objects), có nghĩa là chúng có thể được gán cho biến, được truyền làm đối số cho các hàm khác, và được trả về từ các hàm khác.
+
+### Khai báo Hàm (Function Declaration)
+
+Đây là cách khai báo một hàm có tên. Nó bao gồm từ khóa \`function\`, theo sau là tên hàm, danh sách các tham số trong cặp dấu ngoặc đơn \`()\`, và khối lệnh bên trong cặp dấu ngoặc nhọn \`{}\`.
+
+\`\`\`javascript
+function myFunction(parameter1) {
+  console.log("Đây là hàm của tôi.");
+  console.log("Giá trị được truyền vào là: " + parameter1);
+}
+\`\`\`
+
+* **Hoisting**: Các hàm được khai báo theo cách này sẽ được **hoisting** (đưa lên đầu phạm vi), có nghĩa là bạn có thể gọi chúng trước khi chúng được định nghĩa trong code.
+* **Phạm vi (Scope)**: Trong chế độ nghiêm ngặt (strict mode), các hàm này có phạm vi khối (block scope). Trong chế độ thường, chúng có phạm vi hàm (function scope).
+
+### Gọi Hàm (Calling a Function)
+
+Để thực thi mã bên trong một hàm, bạn cần "gọi" nó bằng cách thêm cặp dấu ngoặc đơn \`()\` vào sau tên hàm.
+
+\`\`\`javascript
+myFunction("Xin chào"); // Thực thi hàm và truyền vào một đối số
+\`\`\`
+
+* **Tham số (Parameters)**: Là các biến được liệt kê trong phần định nghĩa hàm (ví dụ: \`parameter1\`).
+* **Đối số (Arguments)**: Là các giá trị thực tế được truyền vào hàm khi nó được gọi (ví dụ: \`"Xin chào"\`).
+* **Giá trị mặc định**: Bạn có thể gán giá trị mặc định cho tham số: \`function(parameter1 = "mặc định")\`.
+
+## Phần 2: Các cách khai báo Hàm khác nhau
+
+### Biểu thức Hàm (Function Expression)
+
+Là việc tạo ra một hàm ở vị trí mà một biểu thức được mong đợi, thường là gán nó cho một biến.
+
+\`\`\`javascript
+const myVariable = function() {
+  console.log("Đây là một biểu thức hàm.");
+};
+
+myVariable(); // Gọi hàm thông qua biến
+\`\`\`
+
+* **Hàm ẩn danh (Anonymous Function)**: Biểu thức hàm thường không có tên.
+* **Không Hoisting**: Không giống như khai báo hàm, biểu thức hàm không được hoisting.
+
+### Hàm mũi tên (Arrow Function Expression)
+
+Được giới thiệu trong ES6, đây là một cú pháp ngắn gọn để tạo các hàm ẩn danh.
+
+\`\`\`javascript
+const myFunction = (param1, param2) => {
+  return param1 + param2;
+};
+\`\`\`
+
+**Cú pháp rút gọn:**
+
+* Nếu chỉ có một tham số, có thể bỏ qua cặp dấu ngoặc đơn \`()\`: \`param => { ... }\`.
+* Nếu thân hàm chỉ có một biểu thức duy nhất và bạn muốn trả về kết quả của nó, có thể bỏ qua cặp dấu ngoặc nhọn \`{}\` và từ khóa \`return\`:
+    \`const add = (a, b) => a + b;\`
+
+**Đặc điểm quan trọng**: Hàm mũi tên **không** có ngữ cảnh \`this\` và \`arguments\` của riêng nó. Nó sẽ "mượn" các giá trị này từ **phạm vi bao bọc gần nhất** (lexically enclosing environment).
+
+### Biểu thức Hàm được gọi ngay lập tức (IIFE)
+
+Là một hàm được định nghĩa và thực thi ngay lập tức. Cú pháp phổ biến là bọc hàm trong cặp dấu ngoặc đơn.
+
+\`\`\`javascript
+(function() {
+  console.log("Hàm này chạy ngay lập tức!");
+}());
+\`\`\`
+
+Trong quá khứ, IIFE thường được dùng để tạo ra một phạm vi riêng biệt nhằm tránh làm "ô nhiễm" phạm vi toàn cục.
+
+## Phần 3: Từ khóa \`return\` và \`new\`
+
+### Từ khóa \`return\`
+
+* \`return\` được dùng để **dừng việc thực thi** của một hàm và (tùy chọn) trả về một giá trị.
+* Một hàm sẽ ngầm định trả về \`undefined\` nếu không có câu lệnh \`return\` nào được thực thi hoặc \`return\` không có giá trị đi kèm.
+
+### Từ khóa \`new\` và Hàm khởi tạo (Constructor Function)
+
+Khi một hàm được gọi với từ khóa \`new\` ở phía trước, nó hoạt động như một "hàm khởi tạo" để tạo ra một đối tượng mới.
+
+\`\`\`javascript
+function Car(make, model) {
+  this.make = make;
+  this.model = model;
+}
+
+const myCar = new Car("Honda", "Civic"); // myCar là một đối tượng mới
+console.log(myCar.make); // "Honda"
+\`\`\`
+
+Bên trong hàm khởi tạo, từ khóa \`this\` tham chiếu đến đối tượng mới đang được tạo ra. Quy ước chung là viết hoa chữ cái đầu của tên hàm khởi tạo. Trong JavaScript hiện đại, cú pháp \`class\` được ưu tiên sử dụng thay cho hàm khởi tạo.
+
+## Phần 4: Từ khóa \`this\`
+
+Từ khóa \`this\` là một trong những khái niệm phức tạp nhất trong JavaScript. Giá trị của nó **không cố định**, mà phụ thuộc vào **ngữ cảnh mà hàm được gọi**.
+
+### Các loại gắn kết (Binding) của \`this\`
+
+1.  **Gắn kết toàn cục (Global Binding)**:
+    * Khi được gọi bên ngoài bất kỳ hàm nào, \`this\` tham chiếu đến đối tượng toàn cục (\`window\` trên trình duyệt).
+    * Bên trong một hàm thông thường (không phải phương thức của đối tượng), \`this\` cũng tham chiếu đến đối tượng toàn cục (trong chế độ thường) hoặc là \`undefined\` (trong chế độ nghiêm ngặt - "use strict").
+
+2.  **Gắn kết ngầm định (Implicit Binding)**:
+    * Khi một hàm được gọi như một **phương thức (method)** của một đối tượng, \`this\` sẽ tham chiếu đến chính đối tượng đó.
+    \`\`\`javascript
+    const person = {
+      name: "John",
+      greet: function() {
+        console.log("Xin chào, tôi là " + this.name);
+      }
+    };
+    person.greet(); // \`this\` ở đây là đối tượng \`person\`
+    \`\`\`
+
+3.  **Gắn kết tường minh (Explicit Binding)**:
+    * Bạn có thể tự mình thiết lập giá trị của \`this\` bằng các phương thức \`.call()\`, \`.bind()\`, hoặc \`.apply()\`.
+    * \`.bind()\` tạo ra một hàm mới với \`this\` đã được gắn kết vĩnh viễn vào đối tượng bạn chỉ định.
+
+4.  **Gắn kết \`new\` (New Binding)**:
+    * Khi một hàm được gọi với từ khóa \`new\`, \`this\` được gắn kết với đối tượng mới vừa được tạo ra.
+
+5.  **Gắn kết trong Trình xử lý sự kiện (Event Handler Binding)**:
+    * Trong một trình xử lý sự kiện (viết bằng \`function\` thông thường), \`this\` tham chiếu đến phần tử HTML đã kích hoạt sự kiện đó.
+
+### \`this\` trong Hàm mũi tên
+
+Đây là điểm khác biệt lớn nhất. Hàm mũi tên **không có \`this\` của riêng nó**. Thay vào đó, \`this\` được kế thừa từ **phạm vi bao bọc gần nhất** nơi hàm mũi tên được định nghĩa. Điều này làm cho \`this\` trở nên dễ đoán hơn, đặc biệt là khi làm việc với các hàm callback.
+
+\`\`\`javascript
+const person = {
+  name: "Jane",
+  hobbies: ["đọc sách", "chạy bộ"],
+  showHobbies: function() {
+    // \`this\` ở đây là \`person\`
+    this.hobbies.forEach(hobby => {
+      // Nhờ hàm mũi tên, \`this\` bên trong callback vẫn là \`person\`
+      console.log(\`\${this.name} thích \${hobby}\`);
+    });
+  }
+};
+person.showHobbies();
+\`\`\`
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-    </ReadLayout>
+  <ReadLayout title="Hàm và Từ khóa this" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

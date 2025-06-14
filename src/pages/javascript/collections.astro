@@ -1,13 +1,154 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Các Bộ Sưu Tập Dữ Liệu
+
+## Phần 1: Các bộ sưu tập theo chỉ mục (Indexed Collections) - Mảng (Array)
+
+Một bộ sưu tập theo chỉ mục là một cấu trúc dữ liệu mà các phần tử được lưu trữ và truy cập bằng các **chỉ mục (index)** được đánh số, bắt đầu từ 0.
+
+### Mảng (Array)
+
+Mảng là một "hộp chứa" có thể lưu trữ nhiều giá trị thuộc bất kỳ kiểu dữ liệu nào. Các giá trị trong mảng được gọi là các **phần tử (elements)**.
+
+### Tạo Mảng
+
+* **Cú pháp nguyên bản (Array Literal)**: Đây là cách phổ biến và được khuyên dùng nhất. Nó sử dụng một cặp dấu ngoặc vuông \`[]\`.
+    \`\`\`javascript
+    const myArray = [1, "hello", true];
+    \`\`\`
+* **Hàm khởi tạo (Array Constructor)**: Sử dụng từ khóa \`new Array()\`.
+    * **Lưu ý đặc biệt**: Nếu bạn truyền vào một số duy nhất (ví dụ \`new Array(10)\`), nó sẽ tạo ra một mảng có 10 "khe trống" (empty slots), chứ không phải một mảng có một phần tử là số 10. Các mảng có khe trống này (sparse arrays) có thể gây ra hành vi không mong muốn và nên được tránh.
+
+### Truy cập giá trị
+
+Sử dụng **ký pháp ngoặc vuông \`[]\`** với chỉ mục của phần tử. Chỉ mục bắt đầu từ 0.
+
+\`\`\`javascript
+const fruits = ["Táo", "Cam", "Xoài"];
+console.log(fruits[0]); // "Táo"
+console.log(fruits[2]); // "Xoài"
+\`\`\`
+Nếu truy cập một chỉ mục không tồn tại, kết quả sẽ là \`undefined\`.
+
+### Phân rã Gán ghép (Destructuring Assignment)
+
+Đây là một cú pháp ngắn gọn để "giải nén" các giá trị từ mảng vào các biến riêng biệt.
+
+\`\`\`javascript
+const coordinates = [10, 20, 30];
+const [x, y, z] = coordinates;
+
+console.log(x); // 10
+console.log(y); // 20
+\`\`\`
+* Bạn có thể bỏ qua các phần tử bằng cách để trống: \`const [x, , z] = coordinates;\`.
+* Bạn có thể gán giá trị mặc định: \`const [a, b = 2] = [1];\`.
+
+### Toán tử Spread (\`...\`)
+
+Toán tử Spread "trải" các phần tử của một cấu trúc dữ liệu có thể lặp (iterable) như mảng thành các phần tử riêng lẻ.
+
+**Công dụng chính:**
+1.  **Sao chép một mảng (Shallow Copy):**
+    \`\`\`javascript
+    const originalArray = [1, 2, 3];
+    const copiedArray = [...originalArray];
+    \`\`\`
+2.  **Hợp nhất các mảng:**
+    \`\`\`javascript
+    const arr1 = [1, 2];
+    const arr2 = [3, 4];
+    const mergedArray = [...arr1, ...arr2]; // [1, 2, 3, 4]
+    \`\`\`
+3.  **Truyền các phần tử của mảng làm đối số cho hàm:**
+    \`\`\`javascript
+    const numbers = [9, 4, 6];
+    const maxNumber = Math.max(...numbers); // tương đương Math.max(9, 4, 6)
+    \`\`\`
+
+### Toán tử Rest (\`...\`)
+
+Mặc dù có cùng cú pháp, toán tử Rest thực hiện chức năng ngược lại: nó **gom** các phần tử còn lại thành một mảng mới.
+
+* **Trong phân rã gán ghép**:
+    \`\`\`javascript
+    const [first, second, ...restOfTheItems] = [10, 20, 30, 40, 50];
+    console.log(restOfTheItems); // [30, 40, 50]
+    \`\`\`
+* **Trong tham số hàm (Rest Parameter)**: Để chấp nhận một số lượng đối số không xác định.
+    \`\`\`javascript
+    function sum(...numbers) {
+      return numbers.reduce((total, num) => total + num, 0);
+    }
+    sum(1, 2, 3); // 6
+    \`\`\`
+
+### Mảng định kiểu (Typed Arrays)
+
+Đây là một tính năng của ES6 được thiết kế để lưu trữ dữ liệu nhị phân có cấu trúc, ví dụ như khi làm việc với file hoặc WebGL.
+
+## Phần 2: Các bộ sưu tập theo khóa (Keyed Collections)
+
+Đây là các cấu trúc dữ liệu nơi các phần tử được lưu trữ và truy cập bằng một **khóa (key)** duy nhất thay vì chỉ mục số.
+
+### Map
+
+\`Map\` là một bộ sưu tập các cặp **key-value**. Nó có một số ưu điểm so với việc dùng Object thông thường:
+
+* **Khóa có thể là bất kỳ kiểu dữ liệu nào**: Không chỉ là chuỗi hoặc Symbol, khóa của Map có thể là một object, function, hoặc bất kỳ giá trị nào khác.
+* **Bảo toàn thứ tự**: Map ghi nhớ thứ tự các phần tử được thêm vào và sẽ lặp qua chúng theo đúng thứ tự đó.
+* **Dễ dàng lấy kích thước**: Thuộc tính \`.size\` trả về số lượng phần tử.
+
+**Cách sử dụng:**
+\`\`\`javascript
+const userRoles = new Map();
+userRoles.set('john_doe', 'Admin');
+userRoles.set('jane_doe', 'Editor');
+
+console.log(userRoles.get('john_doe')); // "Admin"
+console.log(userRoles.has('jane_doe')); // true
+
+userRoles.delete('john_doe');
+\`\`\`
+
+### WeakMap
+
+\`WeakMap\` là một phiên bản đặc biệt của \`Map\`, nơi các khóa phải là các đối tượng và được giữ dưới dạng **tham chiếu yếu (weak reference)**. Điều này có nghĩa là nếu không còn tham chiếu nào khác đến đối tượng khóa đó, nó có thể bị **bộ dọn rác (garbage collection)** thu dọn khỏi bộ nhớ, giúp ngăn chặn rò rỉ bộ nhớ. \`WeakMap\` không thể lặp qua được.
+
+### Set
+
+\`Set\` là một bộ sưu tập các giá trị **duy nhất**. Nó giống như một mảng nhưng không cho phép các phần tử trùng lặp.
+
+**Cách sử dụng:**
+\`\`\`javascript
+const numbers = new Set();
+numbers.add(1);
+numbers.add(5);
+numbers.add(5); // Giá trị 5 này sẽ bị bỏ qua vì đã tồn tại
+
+console.log(numbers); // Set(2) { 1, 5 }
+console.log(numbers.has(1)); // true
+
+numbers.delete(5);
+\`\`\`
+Một công dụng phổ biến của \`Set\` là để loại bỏ các phần tử trùng lặp khỏi một mảng:
+\`const uniqueNumbers = [...new Set([1, 2, 2, 3, 4, 4])]; // [1, 2, 3, 4]\`
+
+### WeakSet
+
+Tương tự \`WeakMap\`, \`WeakSet\` là phiên bản đặc biệt của \`Set\`, chỉ chứa các đối tượng và giữ chúng dưới dạng **tham chiếu yếu**. Nếu một đối tượng trong \`WeakSet\` không còn được tham chiếu ở nơi nào khác, nó sẽ bị bộ dọn rác thu dọn. \`WeakSet\` cũng không thể lặp qua được.
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-    </ReadLayout>
+  <ReadLayout title="Các Bộ Sưu Tập Dữ Liệu" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

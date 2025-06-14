@@ -1,17 +1,131 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
----
-<Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
 
-        <ul class="list-disc pl-6">
-            <li>Attributes: Mở rộng hành vi và cung cấp thêm thông tin cho các thẻ.</li>
-            <li>Template, slot, and shadow: Nền tảng cho việc tạo các thành phần web (Web Components) có thể tái sử dụng, đóng gói hành vi và cấu trúc.</li>
-            <li>HTML APIs: Giao diện lập trình cho phép JavaScript tương tác và điều khiển các hành vi của trình duyệt (ví dụ: Geolocation API, Web Storage API).</li>
-        </ul>
-    </ReadLayout>
+const markdownContent = `# Advanced and Programmatic Features
+
+- Attributes: Mở rộng hành vi và cung cấp thêm thông tin cho các thẻ.
+- Template, slot, and shadow: Nền tảng cho việc tạo các thành phần web (Web Components) có thể tái sử dụng, đóng gói hành vi và cấu trúc.
+- HTML APIs: Giao diện lập trình cho phép JavaScript tương tác và điều khiển các hành vi của trình duyệt (ví dụ: Geolocation API, Web Storage API).
+
+## Thuộc tính (Attributes)
+
+Phần này đi sâu vào các loại thuộc tính trong HTML, là yếu tố cốt lõi mang lại sức mạnh và chức năng cho các phần tử.
+
+### Các loại thuộc tính
+
+- **Thuộc tính Boolean:**  
+  Sự có mặt của thuộc tính này có nghĩa là giá trị của nó là true. Ví dụ: \`disabled\`, \`required\`, \`checked\`, \`autoplay\`.  
+  Cách dùng tốt nhất: Chỉ cần thêm tên thuộc tính, không cần giá trị (\`<input required>\`). Để đặt thành false, hãy xóa hoàn toàn thuộc tính đó bằng JavaScript.
+
+- **Thuộc tính được liệt kê (Enumerated):**  
+  Có một tập hợp các giá trị hợp lệ được xác định trước. Ví dụ: \`contenteditable\` có thể là \`true\`, \`false\`, hoặc \`inherit\`.  
+  Giá trị không hợp lệ hoặc thiếu giá trị thường sẽ có một giá trị mặc định cụ thể (ví dụ \`type\` của \`<input>\` mặc định là \`text\`).
+
+- **Thuộc tính chung (Global):**  
+  Là các thuộc tính có thể áp dụng cho bất kỳ phần tử HTML nào. Dưới đây là một số thuộc tính chung quan trọng:
+
+### Các thuộc tính chung quan trọng
+
+- **id:**  
+  Cung cấp một định danh duy nhất cho một phần tử trong toàn bộ tài liệu.  
+  Công dụng: Làm mục tiêu cho liên kết (\`#some-id\`), để chọn phần tử bằng JavaScript (\`getElementById\`), và để liên kết \`<label>\` với điều khiển biểu mẫu.
+
+- **class:**  
+  Dùng để nhóm các phần tử lại với nhau, chủ yếu cho mục đích tạo kiểu bằng CSS và chọn bằng JavaScript.  
+  Một phần tử có thể có nhiều class, cách nhau bởi dấu cách.
+
+- **style:**  
+  Dùng để áp dụng CSS trực tiếp lên một phần tử (inline style).  
+  **Lưu ý:** Nên hạn chế sử dụng, thay vào đó hãy viết CSS trong các tệp riêng biệt để dễ quản lý và bảo trì.
+
+- **contenteditable:**  
+  Khi đặt là \`true\`, cho phép người dùng chỉnh sửa trực tiếp nội dung của phần tử.
+
+- **tabindex:**  
+  Quản lý khả năng nhận focus của phần tử. (Sẽ được nói chi tiết ở phần II).
+
+- **role:**  
+  Thuộc quy cách ARIA, dùng để cung cấp ngữ nghĩa bổ sung cho các công nghệ hỗ trợ (như trình đọc màn hình), đặc biệt khi xây dựng các component phức tạp không có thẻ HTML gốc tương ứng.
+
+- **Thuộc tính tùy chỉnh (\`data-*\`):**  
+  **Lưu ý quan trọng:** Khi bạn cần lưu trữ dữ liệu tùy chỉnh cho mục đích scripting, hãy luôn tạo các thuộc tính có tiền tố là \`data-\` (ví dụ: \`data-user-id="123"\`).  
+  Cách làm này an toàn, không xung đột với các thuộc tính HTML trong tương lai và có thể dễ dàng truy cập bằng JavaScript qua \`element.dataset\`.
+
+## Quản lý Tập trung (Focus)
+
+Phần này giải thích cách người dùng điều hướng trang bằng bàn phím và các phương pháp hay nhất.
+
+- **Thứ tự Focus mặc định:** Luôn tuân theo thứ tự của các phần tử trong mã nguồn HTML (DOM order).
+
+- **CẢNH BÁO QUAN TRỌNG:** Không bao giờ được để thứ tự hiển thị trực quan (visual order, được thay đổi bởi CSS) khác với thứ tự trong DOM. Điều này sẽ gây ra trải nghiệm cực kỳ khó hiểu cho người dùng bàn phím.
+
+- **Quản lý Focus bằng \`tabindex\`:**
+  - \`tabindex="0"\`: Thêm một phần tử vào thứ tự Tab tự nhiên.
+  - \`tabindex="-1"\`: Cho phép phần tử nhận focus bằng script nhưng loại bỏ nó khỏi thứ tự Tab.
+  - \`tabindex > 0\` (số dương): **KHÔNG NÊN SỬ DỤNG.** Nó tạo ra một thứ tự focus riêng, phá vỡ luồng tự nhiên và gây khó khăn cho việc sử dụng và bảo trì.
+
+- **Vô hiệu hóa tương tác:**  
+  Dùng thuộc tính \`disabled\` cho các điều khiển biểu mẫu.  
+  Dùng thuộc tính \`inert\` để vô hiệu hóa hoàn toàn một vùng chứa và tất cả các phần tử con của nó.
+
+## Hộp thoại (Dialog)
+
+Sử dụng phần tử \`<dialog>\` để tạo các hộp thoại (pop-up) có ngữ nghĩa và khả năng truy cập tốt.
+
+- **Hộp thoại Modal (\`dialog.showModal()\`):** Chặn tương tác với phần còn lại của trang, focus bị "bẫy" bên trong, và có thể đóng bằng phím Esc.
+
+- **Hộp thoại Non-modal (\`dialog.show()\`):** Không chặn tương tác và không đóng bằng phím Esc.
+
+- **Đóng không cần JavaScript:** Đặt một \`<form method="dialog">\` bên trong \`<dialog>\` để tạo nút đóng.
+
+- **Lưu ý:** Luôn đảm bảo có nút đóng rõ ràng và quản lý tốt việc focus khi hộp thoại mở và đóng.
+
+## Chi tiết và Tóm tắt (Details & Summary)
+
+Đây là cách gốc của HTML để tạo các tiện ích mở/đóng (disclosure widget) mà không cần JavaScript.
+
+- Dùng thẻ \`<details>\` làm vùng chứa và thẻ \`<summary>\` làm tiêu đề/nút bấm luôn hiển thị.
+
+- Trạng thái mở/đóng được kiểm soát bởi thuộc tính boolean \`open\`.
+
+- Đây là giải pháp ngữ nghĩa và dễ truy cập để tạo các mục FAQ hoặc các phần nội dung có thể thu gọn.
+
+## Thành phần Web (Web Components: Templates, Slots, Shadow DOM)
+
+Đây là một bộ công nghệ cho phép tạo ra các phần tử HTML tùy chỉnh, có thể tái sử dụng và được đóng gói hoàn toàn.
+
+- **\`<template>\`:** Dùng để định nghĩa một khối mã HTML "khuôn mẫu". Nội dung bên trong nó không được hiển thị cho đến khi được kích hoạt bằng JavaScript.
+
+- **Phần tử tùy chỉnh (Custom Elements):** Cho phép bạn định nghĩa một thẻ HTML mới (ví dụ: \`<star-rating>\`) bằng \`customElements.define()\`. Tên của nó bắt buộc phải có một dấu gạch ngang.
+
+- **DOM Bóng (Shadow DOM):**  
+  Là công nghệ cốt lõi để đóng gói. Nó tạo ra một cây DOM riêng biệt và bị cô lập bên trong phần tử tùy chỉnh.  
+  **Lợi ích:** CSS bên trong Shadow DOM không ảnh hưởng đến bên ngoài, và CSS bên ngoài không ảnh hưởng vào bên trong. Điều này giúp tránh xung đột về kiểu dáng.
+
+- **\`<slot>\`:**  
+  Là một "khe cắm" giữ chỗ bên trong \`<template>\`.  
+  Nó cho phép truyền nội dung từ bên ngoài vào bên trong phần tử tùy chỉnh, giúp các thành phần trở nên linh hoạt và có thể tùy biến.
+
+## API của HTML   
+
+DOM (Document Object Model) không chỉ là một cấu trúc cây mà còn là một API (Application Programming Interface), cho phép JavaScript tương tác và thao tác với các phần tử.
+
+- **Giao diện Phần tử (Element Interfaces):** Hầu hết mỗi thẻ HTML đều có một giao diện JavaScript tương ứng (ví dụ: \`<img>\` có \`HTMLImageElement\`, \`<video>\` có \`HTMLVideoElement\`). Các giao diện này cung cấp các thuộc tính và phương thức đặc thù (ví dụ: \`image.alt\`, \`video.play()\`, \`video.currentTime\`).
+
+- **Các giao diện nền tảng:**
+  - **Node:** Giao diện cơ bản cho tất cả các nút trong DOM, cung cấp các phương thức để duyệt cây (như \`.firstChild\`) và thao tác (như \`.appendChild()\`).
+  - **Document:** Đại diện cho toàn bộ tài liệu HTML đang được tải trong trình duyệt. Cung cấp các điểm truy cập toàn cục như \`document.getElementById()\`, \`document.body\`.
+  - **Window:** Đối tượng toàn cục nhất, đại diện cho cửa sổ hoặc tab của trình duyệt. Nó chứa \`document\` và cung cấp các hàm và API toàn cục như \`setTimeout\`, \`addEventListener\`, và truy cập vào các tính năng của trình duyệt.
+`;
+---
+
+<Layout>
+  <ReadLayout title="HTML Nâng cao và Tính năng Lập trình" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

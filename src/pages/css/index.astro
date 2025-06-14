@@ -3,20 +3,245 @@ import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
 
 import { links } from "./define-topic.js";
+import CodePlayground from "../../components/CodePlayground.astro";
+
+const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Toggle Button</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Button at the top as required -->
+  <button id="toggleButton">Enable Styling</button>
+  
+  <div class="content-container">
+    <header>
+      <h1>CSS Toggle Demo</h1>
+    </header>
+    
+    <section class="main-content">
+      <h2>About This Demo</h2>
+      <p class="description">This demonstrates how to toggle CSS styling with a button click. All styles are controlled through a single class.</p>
+      
+      <div class="feature-box">
+        <h3>Key Features</h3>
+        <ul>
+          <li>Single button toggle</li>
+          <li>All styles controlled by one class</li>
+          <li>Smooth transitions between states</li>
+          <li>Visually distinct styling differences</li>
+        </ul>
+      </div>
+      
+      <div class="image-container">
+        <div class="placeholder-image">Image Placeholder</div>
+        <p class="caption">A sample image caption that will also change style</p>
+      </div>
+    </section>
+    
+    <footer>
+      <p>Click the button at the top to toggle between styled and unstyled modes</p>
+    </footer>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>
+`
+
+const css = `
+/* Minimal reset for both modes */
+* {
+  transition: all 0.3s ease;
+}
+
+/* Basic button styling to ensure it's clickable */
+#toggleButton {
+  padding: 5px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+/* No styling for plain mode - browser defaults only */
+
+/* ALL STYLING is contained within this class */
+body.styled-mode {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  padding: 20px;
+  background-color: #1a1a2e;
+  color: #e6e6e6;
+}
+
+/* Toggle button styling - only when styled mode is active */
+body.styled-mode #toggleButton {
+  position: sticky;
+  top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  background-color: #e94560;
+  color: white;
+}
+
+body.styled-mode #toggleButton:hover {
+  background-color: #d13551;
+  box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+}
+
+/* Container styling */
+body.styled-mode .content-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+body.styled-mode header {
+  margin-bottom: 30px;
+}
+
+body.styled-mode .main-content {
+  margin-bottom: 40px;
+}
+
+/* Typography styling */
+body.styled-mode h1, 
+body.styled-mode h2, 
+body.styled-mode h3 {
+  margin-bottom: 15px;
+}
+
+body.styled-mode h1 {
+  color: #e94560;
+  font-size: 2.5em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body.styled-mode h2 {
+  color: #16c79a;
+  font-size: 2em;
+}
+
+body.styled-mode h3 {
+  color: #f8a488;
+  border-bottom: 2px solid #f8a488;
+  padding-bottom: 5px;
+}
+
+/* Text styling */
+body.styled-mode p {
+  margin-bottom: 20px;
+  font-size: 1.1em;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
+}
+
+body.styled-mode .description {
+  border-left: 4px solid #16c79a;
+  padding-left: 15px;
+  font-style: italic;
+}
+
+/* Feature box styling */
+body.styled-mode .feature-box {
+  padding: 30px;
+  margin: 20px 0;
+  background-color: #222250;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* List styling */
+body.styled-mode ul {
+  list-style-type: none;
+  margin-bottom: 20px;
+}
+
+body.styled-mode li {
+  padding: 8px 0 8px 30px;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+body.styled-mode li:before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #e94560;
+}
+
+/* Image styling */
+body.styled-mode .image-container {
+  margin: 25px 0;
+}
+
+body.styled-mode .placeholder-image {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #16c79a 0%, #11698e 100%);
+  color: white;
+  font-weight: bold;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+}
+
+body.styled-mode .caption {
+  font-size: 14px;
+  text-align: center;
+  color: #f8a488;
+  font-style: italic;
+}
+
+/* Footer styling */
+body.styled-mode footer {
+  margin-top: 40px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #444;
+  color: #999;
+}
+`
+
+const js = `
+// Wait for DOM to fully load
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleButton = document.getElementById('toggleButton');
+  
+  // Function to toggle styled mode
+  function toggleStyledMode() {
+    // Toggle the styled-mode class on body
+    document.body.classList.toggle('styled-mode');
+    
+    // Update button text based on current state
+    if (document.body.classList.contains('styled-mode')) {
+      toggleButton.textContent = 'Disable Styling';
+    } else {
+      toggleButton.textContent = 'Enable Styling';
+    }
+  }
+  
+  // Add click event listener to the toggle button
+  if (toggleButton) {
+    toggleButton.addEventListener('click', toggleStyledMode);
+  }
+});
+`
+
 ---
 
 <Layout>
     <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        <ul>
-            <li>Welcome to Learn CSS!: Giới thiệu chung.</li>
-            <li>Selectors: Cách nhắm mục tiêu các phần tử HTML.</li>
-            <li>The cascade: Thứ tự ưu tiên của các quy tắc CSS.</li>
-            <li>Specificity: Cách trình duyệt quyết định quy tắc nào phù hợp nhất.</li>
-            <li>Inheritance: Cách các thuộc tính được truyền từ phần tử mẹ sang phần tử con.</li>
-            <li>Functions: Các hàm có sẵn trong CSS (ví dụ: calc(), rgb()).</li>
-            <li>Conclusion and next steps: Tổng kết và định hướng học tập tiếp theo.</li>
-        </ul>
-        
+        <h1 class="heading-1">Welcome to CSS</h1>
+        <p>CSS (Cascading Style Sheets) là ngôn ngữ dùng để mô tả giao diện của tài liệu HTML. CSS cho phép bạn kiểm soát cách các phần tử được hiển thị trên trang web.</p>
+
+        <CodePlayground html={html} css={css} js={js} />
     </ReadLayout>
 </Layout>

@@ -1,13 +1,100 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Giới thiệu về JavaScript
+
+Mặc dù có tên gọi tương tự, JavaScript chỉ liên quan đến Java ở một vài điểm tương đồng về cú pháp. Ban đầu, nó được gọi là "LiveScript" khi ra mắt lần đầu vào năm 1995 trong phiên bản beta của trình duyệt Netscape Navigator.
+
+Để chuẩn hóa ngôn ngữ này, Netscape đã đệ trình nó lên **Ecma International**, một tổ chức tiêu chuẩn kỹ thuật. Năm 1997, Ecma phát hành tiêu chuẩn **ECMA-262**, chính thức hóa một ngôn ngữ kịch bản có tên là **ECMAScript**.
+
+**ECMAScript (ES)** là tiêu chuẩn, còn **JavaScript** là một trong những ngôn ngữ kịch bản phổ biến nhất thực thi tiêu chuẩn đó. Đây là lý do tại sao bạn thường nghe về các phiên bản như "ES5" (phát hành năm 2009), "ES6" (hay "ES2015", phát hành năm 2015), và các phiên bản hàng năm sau đó (ES2016, ES2017,...).
+
+### Các quy tắc cơ bản
+
+JavaScript là một **ngôn ngữ thông dịch (interpreted language)**, không phải là ngôn ngữ biên dịch. Điều này có nghĩa là trình duyệt nhận mã nguồn dưới dạng văn bản mà con người có thể đọc được và thực thi nó trực tiếp, thay vì phải dịch nó sang một dạng mã máy trước.
+
+Khi trình duyệt nhận được một đoạn mã JavaScript, nó sẽ thực hiện **phân tích từ vựng (lexical analysis)** – tức là bóc tách chuỗi ký tự thành các đơn vị nhỏ hơn như:
+* Tokens (các từ khóa, định danh, toán tử...)
+* Ký tự điều khiển định dạng
+* Ký tự kết thúc dòng
+* Chú thích (Comments)
+* Khoảng trắng (Whitespace)
+
+Về cơ bản, một ứng dụng JavaScript được tạo thành từ các **câu lệnh (statements)** và **biểu thức (expressions)**.
+
+### Câu lệnh (Statements)
+
+Câu lệnh là một đơn vị chỉ thị, một hành động. Ví dụ, việc gán giá trị cho một biến là một câu lệnh.
+
+\`\`\`javascript
+let myVariable = 4;
+\`\`\`
+
+Để được thông dịch một cách chính xác, mỗi câu lệnh phải kết thúc bằng một dấu chấm phẩy (\`;\`). Mặc dù JavaScript có một tính năng gọi là **Tự động chèn dấu chấm phẩy (Automatic Semicolon Insertion - ASI)** để sửa lỗi, bạn nên **luôn tự mình thêm dấu chấm phẩy** để tránh các lỗi không mong muốn và đảm bảo mã nguồn rõ ràng.
+
+* **Khối lệnh (Block statements)**: Là một nhóm gồm nhiều câu lệnh được đặt bên trong cặp dấu ngoặc nhọn \`{}\`. Chúng thường được sử dụng cùng với các câu lệnh điều khiển luồng như \`if\`.
+    \`\`\`javascript
+    if (x === 2) {
+      // một vài hành động ở đây
+    }
+    \`\`\`
+
+### Biểu thức (Expressions)
+
+Biểu thức là một đơn vị mã nguồn mà khi thực thi sẽ **tạo ra một giá trị**. Do đó, nó có thể được sử dụng ở bất kỳ đâu mong đợi một giá trị.
+
+\`\`\`javascript
+2 + 2; // Biểu thức này tạo ra giá trị 4
+\`\`\`
+
+### Kiểu dữ liệu yếu (Weak Typing)
+
+JavaScript là một ngôn ngữ có **kiểu dữ liệu yếu**. Điều này có nghĩa là bạn không cần phải khai báo tường minh kiểu dữ liệu (như số, chuỗi,...) cho một biến. JavaScript có thể tự suy ra kiểu dữ liệu dựa trên ngữ cảnh và tự động chuyển đổi giá trị sang kiểu phù hợp. Quá trình này được gọi là **ép kiểu (type coercion)**.
+
+Ví dụ, khi bạn cộng một chuỗi với một số:
+
+\`\`\`javascript
+"1" + 1;
+// Kết quả: "11" (chuỗi)
+\`\`\`
+
+JavaScript sẽ ép kiểu số \`1\` thành chuỗi \`"1"\` và nối hai chuỗi lại với nhau, thay vì báo lỗi như trong các ngôn ngữ có kiểu dữ liệu mạnh.
+
+### Phân biệt chữ hoa/thường (Case Sensitivity)
+
+Không giống như HTML và hầu hết CSS, JavaScript **phân biệt chữ hoa và chữ thường một cách tuyệt đối**. Điều này có nghĩa là \`myVariable\` và \`myvariable\` là hai biến hoàn toàn khác nhau.
+
+\`\`\`javascript
+const myVariable = 2;
+
+myVariable; // Trả về 2
+myvariable; // Báo lỗi: Uncaught ReferenceError: myvariable is not defined
+\`\`\`
+
+### Khoảng trắng (Whitespace)
+
+JavaScript không quan tâm đến số lượng hay loại khoảng trắng (tab hay dấu cách).
+
+\`\`\`javascript
+console.log(       "Chào bạn"  );
+// tương đương với
+console.log("Chào bạn");
+\`\`\`
+
+Tuy nhiên, sự **hiện diện** của khoảng trắng là rất quan trọng để ngăn cách các "token" (các đơn vị cú pháp). Ví dụ, \`let x\` là hợp lệ, nhưng \`letx\` thì không.
+
+Việc sử dụng khoảng trắng (ví dụ như thụt đầu dòng) là một quy ước về phong cách viết mã để giúp mã nguồn dễ đọc và dễ bảo trì hơn, đặc biệt là trong các dự án có nhiều người tham gia.
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-    </ReadLayout>
+  <ReadLayout title="Tổng quan JavaScript" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

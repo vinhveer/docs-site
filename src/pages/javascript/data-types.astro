@@ -1,13 +1,135 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Biến và Các Kiểu Dữ Liệu
+
+## Phần 1: Biến (Variables)
+
+Biến là một cấu trúc dữ liệu dùng để gán một cái tên đại diện cho một giá trị. Tên của biến được gọi là **định danh (identifier)**.
+
+### Quy tắc đặt tên Định danh
+
+* Có thể chứa các chữ cái Unicode, dấu đô la (\`$\`), dấu gạch dưới (\`_\`), và chữ số (0-9).
+* **Không được** chứa khoảng trắng.
+* Phải bắt đầu bằng một chữ cái, \`_\`, hoặc \`$\`. **Không được** bắt đầu bằng chữ số.
+* **Không được** là các "từ khóa dành riêng" của JavaScript (ví dụ: \`let\`, \`if\`, \`function\`).
+* **Không được** chứa các ký tự đặc biệt như \`!\`, \`.\`, \`+\`, \`*\`.
+
+**Quy ước đặt tên (Best Practices):**
+
+* **camelCase**: Rất phổ biến, viết hoa chữ cái đầu của mỗi từ trừ từ đầu tiên (ví dụ: \`myVariableName\`).
+* **PascalCase**: Thường dùng cho tên \`class\`, viết hoa chữ cái đầu của tất cả các từ (ví dụ: \`MyClassName\`).
+* Tên biến nên mô tả ngắn gọn dữ liệu nó chứa (ví dụ: \`distance\` tốt hơn \`miles\`).
+* Định danh bắt đầu bằng dấu gạch dưới (\`_\`) thường được dùng theo quy ước để chỉ ra một thuộc tính "riêng tư" (private).
+
+### Khai báo biến
+
+Có 3 từ khóa để khai báo biến: \`let\`, \`const\`, và \`var\`.
+
+* **\`let\`**: Dùng để khai báo một biến có thể thay đổi giá trị. Đây là cách khai báo biến tiêu chuẩn trong JavaScript hiện đại.
+    * Bạn có thể khai báo trước và gán giá trị (khởi tạo) sau. Nếu không khởi tạo, biến sẽ có giá trị mặc định là \`undefined\`.
+    * Việc khai báo lại một biến đã có với \`let\` trong cùng một phạm vi sẽ gây ra lỗi.
+
+    \`\`\`javascript
+    let myVariable = 10;
+    myVariable = 20; // Hợp lệ
+    // let myVariable = 30; // Lỗi: SyntaxError
+    \`\`\`
+
+* **\`var\`**: Cách khai báo biến cũ hơn. Nó vẫn hoạt động nhưng có một số hành vi khó đoán (sẽ giải thích trong phần Scope và Hoisting). **Nên ưu tiên dùng \`let\` thay cho \`var\`** trong các codebase hiện đại.
+
+* **\`const\` (Hằng số)**:
+    * Dùng để khai báo một hằng số, là một biến có giá trị **không thể thay đổi** sau khi được gán.
+    * **Bắt buộc** phải được khởi tạo ngay khi khai báo.
+    * **Lưu ý quan trọng**: Khi một \`const\` chứa một đối tượng (object) hoặc mảng (array), bạn **không thể** gán lại cho nó một đối tượng/mảng khác, nhưng bạn **có thể** thay đổi các thuộc tính hoặc phần tử bên trong đối tượng/mảng đó.
+        \`\`\`javascript
+        const person = { name: "John" };
+        person.name = "Jane"; // Hợp lệ
+        // person = { name: "Jane" }; // Lỗi: TypeError
+        \`\`\`
+
+### Phạm vi của biến (Variable Scope)
+
+Phạm vi là khu vực trong mã nguồn mà một biến có thể được truy cập.
+
+* **Phạm vi khối (Block Scope)**: Áp dụng cho \`let\` và \`const\`. Biến chỉ tồn tại và có thể được truy cập bên trong cặp dấu ngoặc nhọn \`{}\` nơi nó được khai báo.
+* **Phạm vi hàm (Function Scope)**: Áp dụng cho \`var\`. Biến có thể được truy cập ở bất kỳ đâu bên trong hàm chứa nó, bất kể nó được khai báo ở khối nào trong hàm.
+* **Phạm vi toàn cục (Global Scope)**: Biến được khai báo bên ngoài bất kỳ khối hoặc hàm nào. Nó có thể được truy cập từ mọi nơi trong ứng dụng. Nên hạn chế sử dụng biến toàn cục để tránh xung đột.
+
+### Hoisting (Đưa lên đầu)
+
+Hoisting là một hành vi của JavaScript, trong đó các khai báo biến và hàm được "di chuyển" lên đầu phạm vi của chúng trước khi mã được thực thi.
+
+* Biến khai báo bằng \`var\` được hoisting và được khởi tạo với giá trị \`undefined\`. Điều này có nghĩa là bạn có thể tham chiếu đến biến đó trước khi khai báo mà không gặp lỗi (chỉ nhận được \`undefined\`).
+* Biến khai báo bằng \`let\` và \`const\` cũng được hoisting nhưng chúng **không được khởi tạo**. Việc cố gắng truy cập chúng trước dòng khai báo sẽ gây ra lỗi \`ReferenceError\`. Khoảng không gian từ đầu khối đến dòng khai báo được gọi là **"Vùng chết thời gian" (Temporal Dead Zone - TDZ)**.
+
+## Phần 2: Các kiểu dữ liệu và cấu trúc
+
+JavaScript có 7 kiểu dữ liệu **nguyên thủy (primitive)**. Giá trị nguyên thủy là **bất biến (immutable)**, có nghĩa là bản thân giá trị đó không thể bị thay đổi (ví dụ, bạn không thể thay đổi giá trị của số \`5\` thành số \`6\`).
+
+### 1. Number (Số)
+
+JavaScript chỉ có một kiểu số: số thực dấu phẩy động 64-bit.
+
+* **Số nguyên (Integers)** và **Số thực (Floats)**: Mặc dù bạn có thể viết cả hai, chúng đều được lưu trữ dưới dạng số thực, điều này đôi khi có thể gây ra các lỗi làm tròn nhỏ (ví dụ: \`0.1 + 0.7\` không hoàn toàn bằng \`0.8\`).
+* **Các toán tử**: Hỗ trợ các toán tử toán học cơ bản (\`+\`, \`-\`, \`*\`, \`/\`), lũy thừa (\`**\`), và chia lấy dư (\`%\`).
+* **Giá trị đặc biệt**:
+    * \`Infinity\`: Vô cực (ví dụ: kết quả của \`10 / 0\`).
+    * \`NaN\` (Not a Number): Đại diện cho một giá trị "không phải là số", thường là kết quả của một phép toán không hợp lệ (ví dụ: \`"hai" * 2\`).
+
+### 2. String (Chuỗi)
+
+Là một chuỗi các ký tự được đặt trong dấu nháy đơn (\`'\`), nháy kép (\`"\`) hoặc dấu huyền (\` \` \`).
+
+* **Nối chuỗi (Concatenation)**: Dùng toán tử \`+\` để nối các chuỗi lại với nhau.
+* **Template Literals (Chuỗi mẫu)**: Được tạo bằng dấu huyền (\` \` \`). Chúng có hai ưu điểm lớn:
+    1.  Cho phép viết chuỗi trên nhiều dòng.
+    2.  Cho phép **nội suy chuỗi (string interpolation)** bằng cú pháp \`\${expression}\`.
+        \`\`\`javascript
+        const name = "Thế giới";
+        const greeting = \`Chào, \${name}!\`; // Kết quả: "Chào, Thế giới!"
+        \`\`\`
+
+### 3. Boolean (Luận lý)
+
+Một kiểu dữ liệu logic chỉ có hai giá trị: \`true\` (đúng) và \`false\` (sai).
+
+* Trong JavaScript, mọi giá trị đều có thể được coi là "truthy" (coi như \`true\`) hoặc "falsy" (coi như \`false\`).
+* Các giá trị **falsy** bao gồm: \`false\`, \`0\`, \`""\` (chuỗi rỗng), \`null\`, \`undefined\`, và \`NaN\`. Tất cả các giá trị khác đều là **truthy**.
+
+### 4. \`null\` và \`undefined\`
+
+Cả hai đều biểu thị sự vắng mặt của giá trị, nhưng có mục đích khác nhau.
+
+* **\`undefined\`**: Là giá trị mặc định của một biến đã được khai báo nhưng **chưa được gán giá trị**. Nó có nghĩa là "chưa có giá trị".
+* **\`null\`**: Là một giá trị được gán một cách **cố ý** để biểu thị "không có giá trị" hoặc "trống rỗng".
+* **So sánh**: \`null == undefined\` là \`true\` (so sánh lỏng), nhưng \`null === undefined\` là \`false\` (so sánh nghiêm ngặt) vì chúng là hai kiểu dữ liệu khác nhau.
+
+### 5. BigInt
+
+Dùng để biểu diễn các số nguyên rất lớn, vượt quá giới hạn an toàn của kiểu \`Number\`.
+
+* Để tạo một \`BigInt\`, thêm ký tự \`n\` vào cuối một số nguyên (ví dụ: \`9999999999999999n\`).
+* Bạn không thể trộn lẫn \`BigInt\` và \`Number\` trong các phép toán thông thường.
+
+### 6. Symbol
+
+Là một kiểu dữ liệu nguyên thủy mà giá trị của nó là **duy nhất và bất biến**.
+
+* Mỗi lần gọi hàm \`Symbol()\` sẽ tạo ra một giá trị hoàn toàn mới và độc nhất, ngay cả khi chúng có cùng mô tả.
+    \`Symbol('a') === Symbol('a')\` sẽ là \`false\`.
+* Công dụng chính của \`Symbol\` là tạo ra các khóa thuộc tính (property keys) duy nhất cho các đối tượng để tránh xung đột tên.
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-    </ReadLayout>
+  <ReadLayout title="Biến và Các Kiểu Dữ Liệu" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

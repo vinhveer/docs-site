@@ -1,13 +1,223 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+const markdownContent = `# Lớp (Classes) trong JavaScript
+
+## Phần 1: Lớp (Classes) - Những điều cơ bản
+
+**Lớp (Class)** trong JavaScript là một "bản thiết kế" hoặc "khuôn mẫu" để tạo ra các đối tượng (objects). Nó là một dạng hàm đặc biệt, cung cấp một cú pháp rõ ràng và sạch sẽ hơn để làm việc với kế thừa qua prototype.
+
+* **"Cú pháp ngọt ngào" (Syntactic Sugar)**: Lớp không phải là một khái niệm hoàn toàn mới trong JavaScript, mà là một cách viết thuận tiện hơn cho các cơ chế đã có (hàm khởi tạo và prototype).
+* **Chế độ nghiêm ngặt (Strict Mode)**: Toàn bộ mã nguồn bên trong một khối \`class\` luôn được thực thi ở chế độ nghiêm ngặt.
+
+### Tạo một Lớp và các Thể hiện (Instances)
+
+Sử dụng từ khóa \`class\` để định nghĩa một lớp. Theo quy ước, tên lớp được viết theo kiểu \`PascalCase\`.
+
+\`\`\`javascript
+class MyClass {
+  // Nội dung của lớp
+}
+\`\`\`
+
+Để tạo một đối tượng từ lớp, sử dụng từ khóa \`new\`. Đối tượng được tạo ra được gọi là một **thể hiện (instance)** của lớp đó.
+
+\`\`\`javascript
+const myClassInstance = new MyClass();
+\`\`\`
+
+### Hàm khởi tạo (\`constructor\`)
+
+\`constructor\` là một phương thức đặc biệt bên trong một lớp. Nó sẽ được gọi **tự động** khi một thể hiện mới được tạo ra bằng \`new\`. Đây là nơi để thực hiện các thiết lập ban đầu và khởi tạo các thuộc tính cho đối tượng.
+
+Bên trong hàm khởi tạo và các phương thức khác, từ khóa \`this\` tham chiếu đến chính thể hiện đang được tạo ra.
+
+\`\`\`javascript
+class Car {
+  constructor(make, model) {
+    console.log("Đang tạo một chiếc xe mới...");
+    this.make = make; // this.make là một thuộc tính của thể hiện
+    this.model = model;
+  }
+}
+
+const myCar = new Car("Honda", "Civic");
+console.log(myCar.make); // "Honda"
+\`\`\`
+
+Mỗi lớp chỉ có thể có **một** \`constructor\`. Nếu bạn không định nghĩa, một \`constructor\` rỗng mặc định sẽ được sử dụng.
+
+### Phương thức (Methods)
+
+Là các hàm được định nghĩa bên trong thân của lớp. Các phương thức này sẽ có sẵn trên mọi thể hiện của lớp đó.
+
+\`\`\`javascript
+class Car {
+  constructor(make, model) {
+    this.make = make;
+    this.model = model;
+  }
+
+  // Đây là một phương thức
+  displayInfo() {
+    console.log(\`Xe của tôi là \${this.make} \${this.model}.\`);
+  }
+}
+
+const myCar = new Car("Toyota", "Camry");
+myCar.displayInfo(); // "Xe của tôi là Toyota Camry."
+\`\`\`
+
+## Phần 2: Kế thừa và Mở rộng Lớp
+
+### Từ khóa \`extends\`
+
+\`extends\` được dùng để tạo ra một **lớp con (subclass)** kế thừa từ một **lớp cha (parent class)**. Lớp con sẽ có tất cả các thuộc tính và phương thức của lớp cha.
+
+\`\`\`javascript
+class ElectricCar extends Car {
+  // Lớp ElectricCar bây giờ có tất cả những gì lớp Car có
+}
+\`\`\`
+
+### Từ khóa \`super\`
+
+\`super\` được dùng để truy cập và gọi các hàm trên đối tượng cha.
+
+1.  **Gọi hàm khởi tạo của cha**: Bên trong \`constructor\` của lớp con, bạn **bắt buộc** phải gọi \`super()\` trước khi sử dụng từ khóa \`this\`. \`super()\` sẽ gọi đến \`constructor\` của lớp cha.
+2.  **Gọi phương thức của cha**: Bạn có thể dùng \`super.methodName()\` để gọi một phương thức từ lớp cha.
+
+\`\`\`javascript
+class ElectricCar extends Car {
+  constructor(make, model, batteryRange) {
+    // Gọi constructor của lớp cha (Car)
+    super(make, model);
+
+    // Thêm thuộc tính mới cho lớp con
+    this.batteryRange = batteryRange;
+  }
+
+  // Ghi đè phương thức của cha (Method Overriding)
+  displayInfo() {
+    // Gọi phương thức displayInfo() của cha
+    super.displayInfo();
+    // Thêm thông tin mới
+    console.log(\`Phạm vi pin là \${this.batteryRange} km.\`);
+  }
+}
+
+const tesla = new ElectricCar("Tesla", "Model S", 500);
+tesla.displayInfo();
+\`\`\`
+
+### Getters và Setters
+
+Đây là các phương thức đặc biệt cho phép bạn "lấy" (get) và "đặt" (set) giá trị của một thuộc tính như thể chúng là các thuộc tính thông thường.
+
+\`\`\`javascript
+class User {
+  constructor(firstName, lastName) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  // Getter
+  get fullName() {
+    return \`\${this.firstName} \${this.lastName}\`;
+  }
+
+  // Setter
+  set fullName(newName) {
+    const [first, last] = newName.split(' ');
+    this.firstName = first;
+    this.lastName = last;
+  }
+}
+
+const user = new User("John", "Doe");
+console.log(user.fullName); // Gọi getter: "John Doe"
+
+user.fullName = "Jane Smith"; // Gọi setter
+console.log(user.firstName); // "Jane"
+\`\`\`
+
+## Phần 3: Các thành viên của Lớp (Class Fields and Methods)
+
+Đây là các tính năng hiện đại cho phép khai báo thuộc tính và phương thức một cách rõ ràng hơn.
+
+### Trường (Fields)
+
+Là cách khai báo thuộc tính trực tiếp bên trong thân lớp, không cần \`this.\` trong \`constructor\`.
+
+* **Trường công khai (Public Fields)**:
+    \`\`\`javascript
+    class MyClass {
+      myPublicField = "Giá trị mặc định";
+    }
+    \`\`\`
+* **Trường riêng tư (Private Fields)**: Bắt đầu bằng dấu thăng (\`#\`). Các trường này **chỉ có thể được truy cập từ bên trong** thân lớp đó. Ngay cả lớp con cũng không thể truy cập được.
+    \`\`\`javascript
+    class MyClass {
+      #myPrivateField = "Giá trị bí mật";
+
+      getPrivateValue() {
+        return this.#myPrivateField;
+      }
+    }
+    const instance = new MyClass();
+    // console.log(instance.#myPrivateField); // Lỗi!
+    \`\`\`
+
+### Phương thức (Methods)
+
+* **Phương thức công khai (Public Methods)**: Như đã thấy ở các ví dụ trên.
+* **Phương thức riêng tư (Private Methods)**: Tương tự trường riêng tư, bắt đầu bằng \`#\` và chỉ có thể được gọi từ bên trong lớp.
+
+### Thành viên tĩnh (Static Members)
+
+Các trường và phương thức tĩnh thuộc về **chính lớp đó**, chứ không thuộc về các **thể hiện** của lớp. Bạn truy cập chúng thông qua tên lớp, không phải qua thể hiện.
+
+Chúng thường được dùng cho các hàm tiện ích hoặc các thuộc tính dùng chung cho tất cả các thể hiện.
+
+\`\`\`javascript
+class MathHelper {
+  static PI = 3.14159;
+
+  static add(...numbers) {
+    return numbers.reduce((sum, num) => sum + num, 0);
+  }
+}
+
+console.log(MathHelper.PI); // 3.14159
+console.log(MathHelper.add(2, 3, 5)); // 10
+\`\`\`
+
+### Khối khởi tạo tĩnh (Static Initialization Blocks)
+
+Là một tính năng mới (ES2022) cho phép thực hiện các logic phức tạp để khởi tạo các trường tĩnh. Nó được thực thi **một lần duy nhất** khi lớp được định nghĩa lần đầu tiên.
+
+\`\`\`javascript
+class MyClass {
+  static myStaticField;
+
+  static {
+    // Logic phức tạp ở đây
+    const value = someComplexCalculation();
+    this.myStaticField = value;
+  }
+}
+\`\`\`
+`;
+
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-3xl font-bold">Nội dung chính</h1>
-        
-    </ReadLayout>
+  <ReadLayout title="Lớp (Classes) trong JavaScript" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

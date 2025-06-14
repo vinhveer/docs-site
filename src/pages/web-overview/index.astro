@@ -1,13 +1,75 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ReadLayout from "../../layouts/ReadLayout.astro";
-
+import { Markdown } from "@astropub/md";
 import { links } from "./define-topic.js";
+
+// Khai báo chuỗi Markdown
+const markdownContent = `# Web Overview
+## Tóm tắt sơ đồ kỹ thuật
+
+1. DNS → lấy IP
+2. TCP 3‑way handshake
+3. TLS handshake (HTTPS)
+4. Gửi HTTP GET → nhận HTML
+5. Phân tích HTML → DOM
+6. Phân tích CSS → CSSOM → Render Tree
+7. Layout → Paint → Compositing
+8. Tải thêm tài nguyên → DOM, CSSOM cập nhật → reflow/repaint
+9. Kích hoạt \`DOMContentLoaded\`, \`load\`
+
+## Nhập URL và phân giải tên miền
+
+- Khi bạn nhập URL (\`https://example.com\`), trình duyệt tách phần tên miền và gửi **DNS query** để lấy địa chỉ IP tương ứng (A/AAAA record). Nếu đã cache, bước này có thể được bỏ qua.
+- Hệ điều hành kiểm tra ARP nếu IP nằm trong cùng mạng nội bộ, hoặc gửi qua router .
+
+## Thiết lập kết nối TCP & TLS (nếu dùng HTTPS)
+
+- **TCP handshake** 3 bước (\`SYN → SYN/ACK → ACK\`) để thiết lập kết nối tin cậy.
+- Nếu là HTTPS, thực hiện **TLS handshake**: Client gửi ClientHello → Server trả ServerHello + chứng chỉ → Client xác minh và tạo khóa đối xứng → Trao đổi Finished, hoàn thành kết nối bảo mật.
+
+## Gửi HTTP request
+
+- Sau khi handshake hoàn tất, trình duyệt gửi yêu cầu HTTP GET (kèm cookie nếu có) đến server.
+- Server nhận, xử lý và trả về **HTTP response**: gồm HTML cùng các header và nội dung khác.
+
+## Trình duyệt nhận và phân tích phản hồi
+
+### A. Phân tích HTML → DOM
+
+- Trình duyệt đọc HTML theo từng chunk, thực hiện parsing và xây dựng **cấu trúc DOM** (Document Object Model).
+- Nếu gặp \`<script>\` không có \`defer/async\`, quá trình này bị tạm dừng để xử lý script.
+
+### B. Phân tích CSS → CSSOM & Tạo render tree
+
+- CSS được parsing thành **CSSOM** (CSS Object Model).
+- DOM + CSSOM kết hợp tạo **Render Tree**, loại bỏ các phần tử không hiển thị (\`display: none\`) và áp style.
+
+### C. Layout (Reflow)
+
+- Xác định vị trí và kích thước từng node trong render tree dựa trên viewport và khung hình.
+
+### D. Paint và Compositing
+
+- Trình duyệt vẽ từng box vào các layers. Mỗi layer được **rasterize** thành pixel và gửi đến GPU để hiển thị.
+- Khi có thay đổi (reflow/repaint), trình duyệt chỉ cập nhật vùng cần thay đổi để tối ưu hiệu suất.
+
+## Tải thêm nội dung và tương tác
+
+- Trình duyệt tiếp tục gửi các request HTTP cho tài nguyên khác như CSS, JS, ảnh, font… Phổ biến sử dụng **connection keep-alive** hoặc HTTP/2 để tái sử dụng kết nối TCP.
+- JS có thể thay đổi DOM (via AJAX, event), dẫn đến reflow/repaint lại.
+
+## Sự kiện DOMContentLoaded & load
+
+- Khi HTML đã được phân tích xong (DOM hoàn thành), sự kiện \`DOMContentLoaded\` được kích hoạt.
+- Khi tải xong tất cả tài nguyên như ảnh, CSS, JS thì \`load\` event được kích hoạt.
+`;
 ---
 
 <Layout>
-    <ReadLayout title="Tài liệu học Astro" links={links}>
-        <h1 class="text-2xl font-bold">Nội dung chính</h1>
-        <p>Đây là phần nội dung của trang.</p>
-    </ReadLayout>
+  <ReadLayout title="Tổng quan HTML" links={links}>
+    <main class="prose dark:prose-invert max-w-screen-2xl">
+      <Markdown of={markdownContent} />
+    </main>
+  </ReadLayout>
 </Layout>

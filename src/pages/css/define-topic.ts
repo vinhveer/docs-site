@@ -1,7 +1,7 @@
 let prefix = "/css";
 
 export const links = [
-    { title: "Khái niệm cơ bản & Cú pháp cơ bản", href: `${prefix}/` },
+    { title: "Khái niệm cơ bản & Cú pháp cơ bản", href: `${prefix}/khai-niem-co-ban-cu-phap-co-ban` },
     { title: "Mô hình hộp & Định kích thước", href: `${prefix}/mo-hinh-hop-va-dinh-kich-thuoc` },
     { title: "Bố cục (Layout)", href: `${prefix}/bo-cuc` },
     { title: "Kiểu dáng & Trang trí", href: `${prefix}/kieu-dang-va-trang-tri` },

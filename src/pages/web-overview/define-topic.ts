@@ -1,13 +1,12 @@
-let prefix = "/web-overview";
+let prefix = "/javascript";
 
 export const links = [
-    { title: "Giới thiệu", href: `${prefix}/` },
-    { title: "Cài đặt", href: `${prefix}/setup` },
-    { title: "Ví dụ", href: `${prefix}/examples` },
-    { title: "Tài liệu", href: `${prefix}/docs` },
-    { title: "Hỏi đáp", href: `${prefix}/faq` },
-    { title: "Bản đồ", href: `${prefix}/map` },
-    { title: "Thảo luận", href: `${prefix}/discussions` },
-    { title: "Liên hệ", href: `${prefix}/contact` },
-    { title: "Báo cáo lỗi", href: `${prefix}/report-issue` }
+    { title: "Giới thiệu & Nền tảng", href: `${prefix}/gioi-thieu-nen-tang` },
+    { title: "Các kiểu dữ liệu (Data Types)", href: `${prefix}/data-types` },
+    { title: "Luồng điều khiển & Logic (Control Flow)", href: `${prefix}/control-flow` },
+    { title: "Hàm (Functions)", href: `${prefix}/functions` },
+    { title: "Đối tượng & Kế thừa Prototype (Objects & Prototypes)", href: `${prefix}/objects-and-prototypes` },
+    { title: "Collections (Tập hợp)", href: `${prefix}/collections` },
+    { title: "Lớp (Classes)", href: `${prefix}/classes` }
 ];
+
